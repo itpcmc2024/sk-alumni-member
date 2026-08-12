@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin | SK Alumni Member System V1.0.3</title>
+  <title>Admin | SK Alumni Member System V1.0.4</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="admin-page">
 <header class="topbar compact">
-  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.3</span></p></div></div>
+  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.4</span></p></div></div>
   <nav class="nav-actions"><a href="index.html" class="btn btn-ghost">หน้าเว็บหลัก</a><button id="logoutBtn" class="btn btn-soft hidden">ออกจากระบบ</button></nav>
 </header>
 
@@ -63,6 +63,11 @@
 </section>
 </main>
 
+<div id="memberDetailModal" class="member-detail-modal hidden">
+<div class="member-detail-backdrop" data-close-member-detail></div><div class="member-detail-card">
+<div class="member-detail-head"><div><span class="eyebrow">MEMBER PROFILE</span><h2>รายละเอียดสมาชิก</h2></div><button type="button" class="detail-close" data-close-member-detail>×</button></div>
+<div id="memberDetailBody"></div><div class="member-detail-actions"><button type="button" class="btn btn-ghost" data-close-member-detail>ปิด</button><button type="button" id="detailPrintBtn" class="btn btn-primary">🖨️ พิมพ์ใบสมัคร / PDF</button></div>
+</div></div>
 <div id="toast" class="toast"></div>
 <div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
 <script src="assets/js/app.js"></script>
