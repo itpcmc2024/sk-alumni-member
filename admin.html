@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin | SK Alumni Member System V1.0.4</title>
+  <title>Admin | SK Alumni Member System V1.0.5</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="admin-page">
 <header class="topbar compact">
-  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.4</span></p></div></div>
+  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.5</span></p></div></div>
   <nav class="nav-actions"><a href="index.html" class="btn btn-ghost">หน้าเว็บหลัก</a><button id="logoutBtn" class="btn btn-soft hidden">ออกจากระบบ</button></nav>
 </header>
 
@@ -25,6 +25,13 @@
 </section>
 
 <section id="dashboardPanel" class="hidden">
+  <div class="admin-tabs">
+    <button class="admin-tab active" data-admin-tab="members">👥 สมาชิก</button>
+    <button class="admin-tab" data-admin-tab="news">📣 ข่าวสาร</button>
+    <button class="admin-tab" data-admin-tab="media">🖼️ ไฟล์ภาพ</button>
+    <button class="admin-tab" data-admin-tab="settings">⚙️ ตั้งค่าระบบ</button>
+  </div>
+  <div data-admin-panel="members">
   <div class="dashboard-heading">
     <div><span class="eyebrow">ADMIN DASHBOARD</span><h2>ภาพรวมสมาชิก</h2><p id="adminWelcome"></p></div>
     <button id="refreshBtn" class="btn btn-white">รีเฟรชข้อมูล</button>
@@ -60,6 +67,32 @@
     </div>
     <div id="emptyMembers" class="empty hidden">ไม่พบข้อมูลสมาชิก</div>
   </div>
+</div>
+<div data-admin-panel="news" class="hidden">
+  <div class="panel admin-module">
+    <div class="panel-head"><div><h3>📣 จัดการข่าวสาร</h3><p>เพิ่ม แก้ไข และลบข่าวที่แสดงหน้าเว็บไซต์</p></div><button id="newNewsBtn" class="btn btn-primary">+ เพิ่มข่าว</button></div>
+    <div id="newsAdminList" class="admin-card-list"></div>
+  </div>
+</div>
+<div data-admin-panel="media" class="hidden">
+  <div class="panel admin-module">
+    <div class="panel-head"><div><h3>🖼️ จัดการไฟล์ภาพ</h3><p>ดูไฟล์ที่ระบบเก็บไว้ใน Google Drive (Phase 1)</p></div><button id="refreshMediaBtn" class="btn btn-white">รีเฟรช</button></div>
+    <div id="mediaAdminList" class="media-grid"></div>
+  </div>
+</div>
+<div data-admin-panel="settings" class="hidden">
+  <div class="panel admin-module">
+    <div class="panel-head"><div><h3>⚙️ ตั้งค่าระบบ</h3><p>ค่าพื้นฐานที่ใช้กับระบบสมาชิก</p></div></div>
+    <form id="settingsForm" class="settings-grid">
+      <label>ชื่อระบบ<input name="APP_NAME"></label>
+      <label>อีเมลติดต่อ<input name="CONTACT_EMAIL" type="email"></label>
+      <label>ค่าสมาชิกรายปี<input name="MEMBERSHIP_FEE_YEARLY" inputmode="decimal"></label>
+      <label>ค่าสมาชิกรายเดือน<input name="MEMBERSHIP_FEE_MONTHLY" inputmode="decimal"></label>
+      <label>PromptPay<input name="PROMPTPAY"></label>
+      <div class="settings-actions"><button class="btn btn-primary">💾 บันทึกการตั้งค่า</button></div>
+    </form>
+  </div>
+</div>
 </section>
 </main>
 
@@ -68,7 +101,30 @@
 <div class="member-detail-head"><div><span class="eyebrow">MEMBER PROFILE</span><h2>รายละเอียดสมาชิก</h2></div><button type="button" class="detail-close" data-close-member-detail>×</button></div>
 <div id="memberDetailBody"></div><div class="member-detail-actions"><button type="button" class="btn btn-ghost" data-close-member-detail>ปิด</button><button type="button" id="detailPrintBtn" class="btn btn-primary">🖨️ พิมพ์ใบสมัคร / PDF</button></div>
 </div></div>
-<div id="toast" class="toast"></div>
+
+<div id="newsEditModal" class="member-detail-modal hidden">
+  <div class="member-detail-backdrop" data-close-news></div>
+  <div class="member-detail-card news-edit-card">
+    <div class="member-detail-head"><div><span class="eyebrow">NEWS EDITOR</span><h2>ข่าวสาร</h2></div><button class="detail-close" data-close-news>×</button></div>
+    <form id="newsEditForm" class="news-form">
+      <input type="hidden" name="newsId">
+      <label>หมวดหมู่<select name="category"><option>ข่าวสาร</option><option>ประกาศ</option><option>กิจกรรม</option></select></label>
+      <label>หัวข้อ<input name="title" required></label>
+      <label>รายละเอียด<textarea name="content" rows="6" required></textarea></label>
+      <label class="check-row"><input name="active" type="checkbox" checked> แสดงบนเว็บไซต์</label>
+      <div class="member-detail-actions"><button type="button" class="btn btn-ghost" data-close-news>ยกเลิก</button><button class="btn btn-primary">💾 บันทึก</button></div>
+    </form>
+  </div>
+</div>
+<footer class="v105-footer">
+      <div class="footer-logo-wrap"><img src="assets/img/association-logo.jpg" alt="โลโก้สมาคม"></div>
+      <div class="footer-copy">
+        <b>สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ (สุเหร่าเขียว)</b>
+        <span>نور الإسلام · Nurul Islam</span>
+        <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
+      </div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.5</div>
+    </footer><div id="toast" class="toast"></div>
 <div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
 <script src="assets/js/app.js"></script>
 <script src="assets/js/admin.js"></script>
