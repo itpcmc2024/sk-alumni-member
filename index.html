@@ -68,9 +68,12 @@
             <label>ถนน<input name="road"></label>
 
             <label>รหัสไปรษณีย์
-              <select id="postalCodeSelect" name="postalCode" required disabled>
-                <option value="">-- เลือกรหัสไปรษณีย์ --</option>
-              </select>
+              <div class="postal-search-wrap">
+                <input id="postalCodeInput" name="postalCode" type="text" inputmode="numeric" maxlength="5"
+                       autocomplete="postal-code" placeholder="พิมพ์ เช่น 11120" required disabled>
+                <div id="postalSuggestions" class="postal-suggestions hidden"></div>
+              </div>
+              <small>พิมพ์เลข 1–5 หลัก ระบบจะกรองรหัสที่ตรงให้ทันที</small>
             </label>
             <label>จังหวัด
               <select id="provinceSelect" name="province" required disabled>
@@ -134,6 +137,6 @@
   </section>
 </main>
 
-</main><footer class="v102-footer"><div><img src="assets/img/association-logo.jpg"><p>สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ (สุเหร่าเขียว)<br>نور الإسلام · Nurul Islam<br>🍀 ศรัทธา　♥ ความรู้　🍀 สัมพันธ์</p></div><small>© 2026 SK Alumni Member System by KimhanIkals | V1.0.3</small></footer>
+</main><footer class="v102-footer"><div><img src="assets/img/association-logo.jpg"><p>สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ (สุเหร่าเขียว)<br>نور الإسلام · Nurul Islam<br>🍀 ศรัทธา　♥ ความรู้　🍀 สัมพันธ์</p></div><small>© 2026 SK Alumni Member System by KimhanIkals | V1.0.4</small></footer>
 <div id="toast" class="toast" aria-live="polite"></div><div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div><script src="assets/js/address.js"></script>
 <script src="assets/js/app.js"></script></body></html>
