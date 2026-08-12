@@ -1,9 +1,9 @@
 /*
- SK Alumni Member System V1.0.4 - Hybrid
+ SK Alumni Member System V1.0.5 - Hybrid
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.4',
+  VERSION: '1.0.5',
   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
@@ -113,6 +113,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
 function initRegistration(){
   let step=1;
   const form=$('#registerForm'), prev=$('#prevBtn'), next=$('#nextBtn'), submit=$('#submitBtn');
+  const consent=form.querySelector('input[name="consent"]');
+  function syncConsentButton(){
+    if(!submit) return;
+    const checked=!!consent?.checked;
+    submit.disabled=!checked;
+    submit.classList.toggle('is-disabled',!checked);
+    submit.setAttribute('aria-disabled',String(!checked));
+  }
+  consent?.addEventListener('change',syncConsentButton);
+  syncConsentButton();
   function paint(){
     $$('.form-step').forEach(x=>x.classList.toggle('active', Number(x.dataset.step)===step));
     $$('[data-step-indicator]').forEach(x=>x.classList.toggle('active', Number(x.dataset.stepIndicator)===step));
@@ -150,7 +160,7 @@ function initRegistration(){
       const file=$('#photoInput').files[0];
       if(file){ payload.photoDataUrl=await fileToDataUrl(file); payload.photoName=file.name; }
       const out=await api('registerMember',payload);
-      form.reset(); step=1; paint();
+      form.reset(); step=1; paint(); syncConsentButton();
       $('#statusQuery').value=out.member.memberCode;
       await uiAlert('สมัครสมาชิกเรียบร้อย 🎉',`รหัสสมาชิก: ${out.member.memberCode}
 สถานะ: ${out.member.status}
