@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin | SK Alumni Member System V1.0.6</title>
+  <title>Admin | SK Alumni Member System V1.0.7</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="admin-page">
 <header class="topbar compact">
-  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.6</span></p></div></div>
+  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.7</span></p></div></div>
   <nav class="nav-actions"><a href="index.html" class="btn btn-ghost">หน้าเว็บหลัก</a><button id="logoutBtn" class="btn btn-soft hidden">ออกจากระบบ</button></nav>
 </header>
 
@@ -49,6 +49,8 @@
       <div><h3>จัดการสมาชิก</h3><p>ค้นหาและเปลี่ยนสถานะสมาชิก</p></div>
       <div class="filters">
         <input id="memberSearch" placeholder="ค้นหารหัส / ชื่อ / อีเมล / จังหวัด">
+<select id="sortOrder"><option value="newest">ใหม่ → เก่า</option><option value="oldest">เก่า → ใหม่</option></select>
+<select id="pageSize"><option>5</option><option selected>10</option><option>20</option><option>50</option><option>100</option><option value="all">All</option></select>
         <select id="statusFilter">
           <option value="">ทุกสถานะ</option>
           <option>รอตรวจสอบข้อมูล</option>
@@ -59,7 +61,7 @@
         </select>
       </div>
     </div>
-    <div class="table-wrap">
+    <div id="memberPagerTop" class="member-pager"></div><div class="table-wrap">
       <table>
         <thead><tr><th>รหัส</th><th>ชื่อ-สกุล</th><th>อีเมล</th><th>จังหวัด</th><th>วันที่สมัคร</th><th>สถานะ</th><th>จัดการ</th></tr></thead>
         <tbody id="membersTbody"></tbody>
@@ -126,7 +128,7 @@
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.6</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.7</div>
     </footer><div id="toast" class="toast"></div>
 <div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
 <script src="assets/js/app.js"></script>
