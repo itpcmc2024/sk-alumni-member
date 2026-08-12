@@ -1,9 +1,9 @@
 /*
- SK Alumni Member System V1.0.7 - Hybrid
+ SK Alumni Member System V1.0.8 - Hybrid
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.7',
+  VERSION: '1.0.8',
   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
@@ -188,9 +188,60 @@ async function loadNews(){
   if(!apiReady()) return;
   try{
     const out=await api('publicNews',{});
-    if(!out.news?.length) return;
-    $('#newsList').innerHTML=out.news.map(n=>`<article class="info-card"><span class="tag">${escapeHtml(n.category||'ข่าวสาร')}</span><h4>${escapeHtml(n.title)}</h4><p>${escapeHtml(n.content)}</p></article>`).join('');
-  }catch(e){ console.warn(e); }
+    const list=out.news||[];
+    window.SK_PUBLIC_NEWS=list;
+    renderHomeNews(list.slice(0,4));
+    const btn=$('#showAllNewsBtn');
+    if(btn){
+      btn.onclick=()=>openAllNews(list);
+      btn.classList.toggle('hidden',list.length===0);
+    }
+  }catch(e){
+    console.warn(e);
+    if($('#newsList')) $('#newsList').innerHTML='<div class="news-empty">ยังไม่สามารถโหลดข่าวสารได้</div>';
+  }
+}
+function renderHomeNews(list){
+  const host=$('#newsList'); if(!host) return;
+  if(!list.length){host.innerHTML='<div class="news-empty">ยังไม่มีข่าวสาร</div>';return;}
+  host.innerHTML=list.map((n,i)=>`<article class="home-news-item">
+    <div class="news-thumb ${['mint','pink','blue','amber'][i%4]}">${newsEmoji(n.category)}</div>
+    <div class="home-news-copy">
+      <div class="news-meta"><span>${escapeHtml(n.category||'ข่าวสาร')}</span>${n.publishDate?`<time>${escapeHtml(formatShortDate(n.publishDate))}</time>`:''}</div>
+      <h4>${escapeHtml(n.title||'')}</h4>
+      <p>${escapeHtml(String(n.content||'').slice(0,92))}${String(n.content||'').length>92?'…':''}</p>
+    </div>
+    <button class="news-arrow" type="button" onclick='openNewsDetail(${JSON.stringify(JSON.stringify(n))})'>›</button>
+  </article>`).join('');
+}
+function newsEmoji(category){
+  const c=String(category||'');
+  if(c.includes('กิจกรรม')) return '🎉';
+  if(c.includes('ประกาศ')) return '📌';
+  return '📰';
+}
+function formatShortDate(v){
+  const d=new Date(v); if(Number.isNaN(d.getTime())) return '';
+  return new Intl.DateTimeFormat('th-TH',{day:'numeric',month:'short',year:'numeric'}).format(d);
+}
+function openNewsDetail(json){
+  let n={}; try{n=JSON.parse(json);}catch(_){}
+  uiAlert(n.title||'ข่าวสาร',`${n.category||'ข่าวสาร'}\n\n${n.content||''}`,'success');
+}
+function openAllNews(list){
+  const modal=ensureUiModal();
+  const icon=modal.querySelector('.sk-modal-icon');
+  icon.textContent='📰'; icon.className='sk-modal-icon';
+  modal.querySelector('.sk-modal-title').textContent='ข่าวสารทั้งหมด';
+  modal.querySelector('.sk-modal-message').innerHTML=`<div class="all-news-modal">${
+    (list||[]).map(n=>`<button class="all-news-row" type="button" onclick='openNewsDetail(${JSON.stringify(JSON.stringify(n))})'>
+      <b>${escapeHtml(n.title||'')}</b><span>${escapeHtml(n.category||'ข่าวสาร')}</span>
+    </button>`).join('') || '<div class="news-empty">ยังไม่มีข่าวสาร</div>'
+  }</div>`;
+  modal.querySelector('.sk-modal-cancel').classList.add('hidden');
+  modal.classList.remove('hidden');
+  const ok=modal.querySelector('.sk-modal-ok');
+  ok.onclick=()=>{modal.classList.add('hidden');ok.onclick=null;};
 }
 
 async function loadPublicStats(){if(!apiReady())return;try{const o=await api('publicStats',{});$('#homeStatTotal').textContent=Number(o.stats.total||0).toLocaleString('th-TH');$('#homeStatActive').textContent=Number(o.stats.active||0).toLocaleString('th-TH')}catch(e){console.warn(e)}}
