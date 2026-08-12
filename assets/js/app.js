@@ -1,9 +1,9 @@
 /*
- SK Alumni Member System V1.0.0 - Hybrid
+ SK Alumni Member System V1.0.3 - Hybrid
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.2',
+  VERSION: '1.0.3',
   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
@@ -14,10 +14,62 @@ function apiReady(){
   return SK_CONFIG.API_URL && SK_CONFIG.API_URL.startsWith('https://script.google.com/');
 }
 function setLoading(show){ const el=$('#loading'); if(el) el.classList.toggle('hidden', !show); }
-function toast(msg, type='ok'){
-  const el=$('#toast'); if(!el) return alert(msg);
-  el.textContent=msg; el.className='toast show'+(type==='error'?' error':'');
-  clearTimeout(window.__toastTimer); window.__toastTimer=setTimeout(()=>el.className='toast',3800);
+function ensureUiModal(){
+  let el=document.querySelector('#skUiModal');
+  if(el) return el;
+  el=document.createElement('div');
+  el.id='skUiModal';
+  el.className='sk-modal hidden';
+  el.innerHTML=`
+    <div class="sk-modal-backdrop"></div>
+    <div class="sk-modal-card" role="dialog" aria-modal="true">
+      <div class="sk-modal-icon">✓</div>
+      <h3 class="sk-modal-title"></h3>
+      <div class="sk-modal-message"></div>
+      <div class="sk-modal-actions">
+        <button class="btn btn-ghost sk-modal-cancel hidden" type="button">ยกเลิก</button>
+        <button class="btn btn-primary sk-modal-ok" type="button">ตกลง</button>
+      </div>
+    </div>`;
+  document.body.appendChild(el);
+  return el;
+}
+
+function uiAlert(title,message,type='success'){
+  const el=ensureUiModal();
+  const icon=el.querySelector('.sk-modal-icon');
+  icon.textContent=type==='error'?'!':type==='warning'?'⚠':'✓';
+  icon.className='sk-modal-icon '+type;
+  el.querySelector('.sk-modal-title').textContent=title||'แจ้งเตือน';
+  el.querySelector('.sk-modal-message').innerHTML=escapeHtml(String(message||'')).replace(/\n/g,'<br>');
+  el.querySelector('.sk-modal-cancel').classList.add('hidden');
+  el.classList.remove('hidden');
+  return new Promise(resolve=>{
+    const ok=el.querySelector('.sk-modal-ok');
+    const close=()=>{el.classList.add('hidden');ok.onclick=null;resolve(true);};
+    ok.onclick=close;
+    el.querySelector('.sk-modal-backdrop').onclick=close;
+  });
+}
+
+function uiConfirm(title,message){
+  const el=ensureUiModal();
+  const icon=el.querySelector('.sk-modal-icon');
+  icon.textContent='?'; icon.className='sk-modal-icon warning';
+  el.querySelector('.sk-modal-title').textContent=title||'ยืนยันรายการ';
+  el.querySelector('.sk-modal-message').innerHTML=escapeHtml(String(message||'')).replace(/\n/g,'<br>');
+  const cancel=el.querySelector('.sk-modal-cancel'), ok=el.querySelector('.sk-modal-ok');
+  cancel.classList.remove('hidden');
+  el.classList.remove('hidden');
+  return new Promise(resolve=>{
+    const close=(value)=>{el.classList.add('hidden');ok.onclick=null;cancel.onclick=null;resolve(value);};
+    ok.onclick=()=>close(true); cancel.onclick=()=>close(false);
+    el.querySelector('.sk-modal-backdrop').onclick=()=>close(false);
+  });
+}
+
+function toast(msg,type='ok'){
+  return uiAlert(type==='error'?'เกิดข้อผิดพลาด':'แจ้งเตือน',msg,type==='error'?'error':'success');
 }
 async function api(action, payload={}){
   if(!apiReady()) throw new Error('ยังไม่ได้กำหนด GAS Web App URL ใน assets/js/app.js');
@@ -64,18 +116,33 @@ function initRegistration(){
   function paint(){
     $$('.form-step').forEach(x=>x.classList.toggle('active', Number(x.dataset.step)===step));
     $$('[data-step-indicator]').forEach(x=>x.classList.toggle('active', Number(x.dataset.stepIndicator)===step));
-    prev.hidden=step===1; next.hidden=step===3; submit.hidden=step!==3;
+    prev.hidden=step===1;
+    next.hidden=step>=3;
+    submit.hidden=step!==3;
+    next.classList.toggle('hidden', step>=3);
+    submit.classList.toggle('hidden', step!==3);
   }
-  function validateCurrent(){
+  async function validateCurrent(){
     const panel=$(`.form-step[data-step="${step}"]`);
     const fields=$$('input,select,textarea',panel);
-    for(const f of fields){ if(!f.checkValidity()){ f.reportValidity(); return false; } }
+    for(const f of fields){
+      if(!f.checkValidity()){
+        const label=f.closest('label');
+        const fieldName=(label?.childNodes?.[0]?.textContent||f.name||'ข้อมูล').trim();
+        let msg=`กรุณาตรวจสอบช่อง “${fieldName}”`;
+        if(f.validity.valueMissing) msg=`กรุณากรอก/เลือก “${fieldName}”`;
+        else if(f.validity.typeMismatch) msg=`รูปแบบ “${fieldName}” ไม่ถูกต้อง`;
+        await uiAlert('ข้อมูลยังไม่ครบ',msg,'warning');
+        f.focus();
+        return false;
+      }
+    }
     return true;
   }
-  next.addEventListener('click',()=>{ if(validateCurrent()){step++;paint();window.scrollTo({top:$('#register').offsetTop-90,behavior:'smooth'});} });
+  next.addEventListener('click',async()=>{ if(await validateCurrent()){step=Math.min(3,step+1);paint();window.scrollTo({top:$('#register').offsetTop-90,behavior:'smooth'});} });
   prev.addEventListener('click',()=>{step--;paint();});
   form.addEventListener('submit',async e=>{
-    e.preventDefault(); if(!validateCurrent()) return;
+    e.preventDefault(); if(!(await validateCurrent())) return;
     try{
       setLoading(true);
       const fd=new FormData(form), payload=Object.fromEntries(fd.entries());
@@ -85,8 +152,10 @@ function initRegistration(){
       const out=await api('registerMember',payload);
       form.reset(); step=1; paint();
       $('#statusQuery').value=out.member.memberCode;
-      toast(`สมัครเรียบร้อย รหัสสมาชิก ${out.member.memberCode}`);
-      alert(`สมัครสมาชิกเรียบร้อย\n\nรหัสสมาชิก: ${out.member.memberCode}\nสถานะ: ${out.member.status}\n\nกรุณาจดรหัสสมาชิกนี้ไว้สำหรับตรวจสอบสถานะ`);
+      await uiAlert('สมัครสมาชิกเรียบร้อย 🎉',`รหัสสมาชิก: ${out.member.memberCode}
+สถานะ: ${out.member.status}
+
+กรุณาจดรหัสสมาชิกนี้ไว้สำหรับตรวจสอบสถานะ`,'success');
       location.hash='status';
     }catch(err){ toast(err.message,'error'); }finally{setLoading(false);}
   });
