@@ -1,4 +1,4 @@
-SK Alumni Member System V1.0.0 - Hybrid
+SK Alumni Member System V1.0.1 - Hybrid
 ================================================
 Frontend : GitHub Pages
 Backend  : Google Apps Script
@@ -28,7 +28,7 @@ Drive Folder ID:
 ขั้นตอนติดตั้งแบบสั้น
 --------------------
 1. GitHub:
-   วาง index.html / admin.html / member.html / assets ทั้งหมดที่ root ของ repo SK-Alumni-Member
+   วาง index.html / admin.html / member.html / assets ทั้งหมดที่ root ของ repo sk-alumni-member
 
 2. Google Apps Script:
    - สร้าง/เปิด Apps Script Project
@@ -45,7 +45,7 @@ Drive Folder ID:
 4. เชื่อม GitHub กับ GAS:
    เปิด assets/js/app.js
    เปลี่ยน:
-   API_URL: 'PASTE_YOUR_GAS_WEB_APP_URL_HERE'
+   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
    เป็น:
    API_URL: 'https://script.google.com/macros/s/......../exec'
 
@@ -62,7 +62,7 @@ Drive Folder ID:
 7. หลังทดสอบผ่าน:
    เปลี่ยนรหัสผ่าน Admin โดยใช้ changeDefaultAdminPassword() ตามคำอธิบายใน Code.gs
 
-สิ่งที่มีใน V1.0.0
+สิ่งที่มีใน V1.0.1
 -----------------
 - หน้าแรก Responsive ขาว-เขียวพาสเทล
 - สมัครสมาชิก 3 Step
@@ -77,7 +77,7 @@ Drive Folder ID:
 - ลบสมาชิก + Audit Log
 - Tabs โครงสร้างสำหรับ Payment/Donation/Benefit/News/Accounting เตรียมไว้แล้ว
 
-ยังไม่รวมใน V1.0.0
+ยังไม่รวมใน V1.0.1
 ------------------
 - LINE LIFF
 - ระบบค้นหาที่อยู่จากฐานรหัสไปรษณีย์
@@ -89,4 +89,11 @@ Drive Folder ID:
 - สิทธิประโยชน์เต็มระบบ
 - บัญชีรายรับ-รายจ่าย/รายงานเต็มระบบ
 
-เวอร์ชัน: V1.0.0
+เวอร์ชัน: V1.0.1
+
+
+Repository:
+https://github.com/itpcmc2024/sk-alumni-member
+
+GAS Web App:
+https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec
