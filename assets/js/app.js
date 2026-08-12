@@ -3,7 +3,7 @@
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.1',
+  VERSION: '1.0.2',
   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if($('#registerForm')) initRegistration();
   if($('#statusForm')) initStatusCheck();
   if($('#newsList')) loadNews();
+  if($('#homeStatTotal')) loadPublicStats();
 });
 
 function initRegistration(){
@@ -112,3 +113,5 @@ async function loadNews(){
     $('#newsList').innerHTML=out.news.map(n=>`<article class="info-card"><span class="tag">${escapeHtml(n.category||'ข่าวสาร')}</span><h4>${escapeHtml(n.title)}</h4><p>${escapeHtml(n.content)}</p></article>`).join('');
   }catch(e){ console.warn(e); }
 }
+
+async function loadPublicStats(){if(!apiReady())return;try{const o=await api('publicStats',{});$('#homeStatTotal').textContent=Number(o.stats.total||0).toLocaleString('th-TH');$('#homeStatActive').textContent=Number(o.stats.active||0).toLocaleString('th-TH')}catch(e){console.warn(e)}}
