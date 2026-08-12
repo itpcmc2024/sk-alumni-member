@@ -16,12 +16,20 @@
 <a href="status.html" class="f blue"><i>🔎</i><b>ตรวจสอบสถานะ</b><small>เช็คผล/สถานะการสมัคร</small><em>ตรวจสอบ　›</em></a>
 <a href="payment.html" class="f pink"><i>💳</i><b>ชำระค่าสมาชิก</b><small>โอนเงินแนบสลิปได้เลย</small><em>ชำระเงิน　›</em></a>
 <a href="donation.html" class="f purple"><i>🤲🏻</i><b>บริจาค</b><small>ร่วมสนับสนุนกิจกรรม</small><em>บริจาค　›</em></a>
-<a href="member.html" class="f orange"><i>🎁</i><b>สิทธิประโยชน์</b><small>สิทธิพิเศษสำหรับสมาชิก</small><em>ดูสิทธิประโยชน์　›</em></a>
-<a href="#news" class="f teal"><i>📣</i><b>ข่าวสาร</b><small>กิจกรรม & ประชาสัมพันธ์</small><em>ดูข่าวสาร　›</em></a>
+<a href="member.html" class="f orange"><i><span class="cute-visual"><span>🎁</span></span></i><b>สิทธิประโยชน์</b><small>สิทธิพิเศษสำหรับสมาชิก</small><em>ดูสิทธิประโยชน์　›</em></a>
+<a href="#news" class="f teal"><i><span class="cute-visual"><span>📣</span></span></i><b>ข่าวสาร</b><small>กิจกรรม & ประชาสัมพันธ์</small><em>ดูข่าวสาร　›</em></a>
 </section>
 <section class="v102-mid"><div class="panel"><h3>👥 จำนวนสมาชิกล่าสุด</h3><div class="stats"><div>👥 <b id="homeStatTotal">—</b><small>สมาชิกทั้งหมด</small></div><div>👥 <b id="homeStatActive">—</b><small>สมาชิกปีนี้</small></div><div>❤️ <b>—</b><small>สมาชิกใหม่</small></div><div>⭐ <b>—</b><small>กิจกรรม/ปี</small></div></div></div>
 <div class="panel quote">❝<p>เรามาไกลเพราะการศึกษา<br>เราจะไปได้ไกลกว่า<br><b>เพราะความร่วมมือของเรา</b></p>❤️</div>
-<div class="panel" id="news"><h3>📣 ข่าวสารล่าสุด</h3><div id="newsList">กำลังโหลดข่าวสาร...</div></div></section>
+<div class="panel home-news-panel" id="news">
+      <div class="home-news-head">
+        <h3>📣 ข่าวสารล่าสุด</h3>
+        <button type="button" id="showAllNewsBtn" class="news-all-btn">ดูทั้งหมด ›</button>
+      </div>
+      <div id="newsList" class="home-news-list">
+        <div class="news-loading">กำลังโหลดข่าวสาร...</div>
+      </div>
+    </div></section>
 <section class="v102-bottom"><div class="panel"><h3>🚀 ขั้นตอนการเป็นสมาชิก</h3><div class="foursteps"><a href="register.html">1<br>📋<b>กรอกข้อมูล</b><small>สมัครสมาชิกออนไลน์</small></a><a href="register.html">2<br>📸<b>อัปโหลดรูป</b><small>แนบรูปถ่ายสมาชิก</small></a><a href="#payment">3<br>📱<b>ชำระเงิน</b><small>โอนเงินและแนบสลิป</small></a><a href="status.html">4<br>🪪<b>รับหลักฐาน</b><small>ตรวจสอบและรับบัตรสมาชิก</small></a></div></div>
 <div class="panel pay" id="payment"><h3>💰 QR พร้อมเพย์ สำหรับชำระเงิน</h3><div><img src="assets/img/membership-payment-qr.jpg"><aside><small>ชื่อบัญชี</small><h3>วิโรจน์ เซ็นเยาะ</h3><p>❤️ สำหรับค่าสมาชิก / บริจาค</p><a href="assets/img/membership-payment-qr.jpg" target="_blank">ดาวน์โหลด QR　⌄</a></aside></div></div></section>
 </main><footer class="v105-footer">
@@ -31,7 +39,7 @@
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.7</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.8</div>
     </footer>
 <div id="toast" class="toast" aria-live="polite"></div><div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
 <script src="assets/js/app.js"></script></body></html>
