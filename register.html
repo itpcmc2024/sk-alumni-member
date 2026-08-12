@@ -1,0 +1,121 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css"><title>สมัครสมาชิก | SK Alumni Member System V1.0.5</title></head>
+<body class="v105-page inner-page"><header class="v105-header">
+      <a class="v105-brand" href="index.html">
+        <img src="assets/img/association-logo.jpg" alt="โลโก้สมาคม">
+        <b>สมาคมศิษย์เก่า<br>นูรุ้ลอิสลามสัมพันธ์<br><span>(สุเหร่าเขียว)</span></b>
+      </a>
+      <nav><a class="" href="index.html"><span>🕌</span><small>หน้าแรก</small></a><a class="active" href="register.html"><span>🧕🏻</span><small>สมัครสมาชิก</small></a><a class="" href="status.html"><span>🔎</span><small>ตรวจสอบสถานะ</small></a><a class="" href="index.html#payment"><span>🤲🏻</span><small>บริจาค</small></a><a class="" href="member.html"><span>🎁</span><small>สิทธิประโยชน์</small></a><a class="" href="index.html#news"><span>📣</span><small>ข่าวสาร</small></a><a class="" href="admin.html"><span>🌙</span><small>เข้าสู่ระบบ</small></a></nav>
+      <a class="linebtn" href="register.html"><b>LINE</b>&nbsp; สมัครผ่าน LINE &nbsp;›</a>
+    </header>
+<main class="standalone-main"><section class="standalone-card register-card">
+<div class="page-intro"><span>🧕🏻 REGISTER</span><h1>สมัครสมาชิก</h1><p>กรอกข้อมูลทีละขั้น ระบบจะสร้างรหัสสมาชิกให้อัตโนมัติ</p></div>
+<div class="form-shell">
+      <div class="section-head">
+        <div><span class="eyebrow">REGISTER</span><h3>สมัครสมาชิก</h3>
+          <p>กรอกข้อมูลให้ครบ ระบบจะสร้างรหัสสมาชิกให้อัตโนมัติ</p></div>
+      </div>
+
+      <div class="steps">
+        <div class="step active" data-step-indicator="1"><span>1</span>ข้อมูลส่วนตัว</div>
+        <div class="step" data-step-indicator="2"><span>2</span>ที่อยู่และติดต่อ</div>
+        <div class="step" data-step-indicator="3"><span>3</span>รูปถ่ายและยืนยัน</div>
+      </div>
+
+      <form id="registerForm" novalidate>
+        <div class="form-step active" data-step="1">
+          <div class="form-grid">
+            <label>คำนำหน้า
+              <select name="prefix" required>
+                <option value="">-- เลือก --</option>
+                <option>นาย</option><option>นาง</option><option>นางสาว</option>
+                <option>เด็กชาย</option><option>เด็กหญิง</option><option>อื่นๆ</option>
+              </select>
+            </label>
+            <label class="span-2">ชื่อ-สกุล
+              <input name="fullName" required placeholder="ชื่อและนามสกุล">
+            </label>
+            <label class="span-3">ชื่ออาหรับ
+              <input name="arabicName" placeholder="ถ้ามี">
+            </label>
+          </div>
+        </div>
+
+        <div class="form-step" data-step="2">
+          <div class="address-helper">
+            <div>
+              <b>📍 เลือกที่อยู่อัตโนมัติ</b>
+              <small>เริ่มจากรหัสไปรษณีย์ ระบบจะกรอง จังหวัด → อำเภอ/เขต → ตำบล/แขวง ให้แคบลงอัตโนมัติ</small>
+            </div>
+            <span id="addressDbStatus" class="address-db-status">กำลังเตรียมฐานข้อมูลที่อยู่...</span>
+          </div>
+          <div class="form-grid">
+            <label>บ้านเลขที่<input name="houseNo" autocomplete="address-line1"></label>
+            <label>หมู่<input name="moo" inputmode="numeric"></label>
+            <label>ซอย<input name="soi"></label>
+            <label>ถนน<input name="road"></label>
+
+            <label>รหัสไปรษณีย์
+              <div class="postal-search-wrap">
+                <input id="postalCodeInput" name="postalCode" type="text" inputmode="numeric" maxlength="5"
+                       autocomplete="postal-code" placeholder="พิมพ์ เช่น 11120" required disabled>
+                <div id="postalSuggestions" class="postal-suggestions hidden"></div>
+              </div>
+              <small>พิมพ์เลข 1–5 หลัก ระบบจะกรองรหัสที่ตรงให้ทันที</small>
+            </label>
+            <label>จังหวัด
+              <select id="provinceSelect" name="province" required disabled>
+                <option value="">-- เลือกจังหวัด --</option>
+              </select>
+            </label>
+            <label>อำเภอ / เขต
+              <select id="districtSelect" name="district" required disabled>
+                <option value="">-- เลือกอำเภอ / เขต --</option>
+              </select>
+            </label>
+            <label>ตำบล / แขวง
+              <select id="subdistrictSelect" name="subdistrict" required disabled>
+                <option value="">-- เลือกตำบล / แขวง --</option>
+              </select>
+            </label>
+
+            <label class="span-2">อีเมล<input name="email" type="email" required placeholder="name@example.com" autocomplete="email"></label>
+            <label>เบอร์โทรศัพท์<input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxx" maxlength="15"></label>
+          </div>
+        </div>
+
+        <div class="form-step" data-step="3">
+          <div class="form-grid">
+            <label class="span-3">รูปถ่ายสมาชิก
+              <input id="photoInput" name="photo" type="file" accept="image/*">
+              <small>รองรับ JPG / PNG แนะนำไม่เกิน 3 MB</small>
+            </label>
+            <div class="span-3 consent">
+              <label class="check-row">
+                <input type="checkbox" name="consent" required>
+                <span>ข้าพเจ้ายืนยันว่าข้อมูลที่กรอกถูกต้อง และยินยอมให้สมาคมจัดเก็บข้อมูลเพื่อการบริหารสมาชิก</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-footer">
+          <button type="button" id="prevBtn" class="btn btn-ghost" hidden>ย้อนกลับ</button>
+          <div class="spacer"></div>
+          <button type="button" id="nextBtn" class="btn btn-primary">ถัดไป</button>
+          <button type="submit" id="submitBtn" class="btn btn-primary" hidden>ยืนยันการสมัคร</button>
+        </div>
+      </form>
+    </div></section></main><footer class="v105-footer">
+      <div class="footer-logo-wrap"><img src="assets/img/association-logo.jpg" alt="โลโก้สมาคม"></div>
+      <div class="footer-copy">
+        <b>สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ (สุเหร่าเขียว)</b>
+        <span>نور الإسلام · Nurul Islam</span>
+        <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
+      </div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.5</div>
+    </footer>
+<div id="toast" class="toast"></div><div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
+<script src="assets/js/address.js"></script><script src="assets/js/app.js"></script></body></html>
