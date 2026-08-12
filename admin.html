@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin | SK Alumni Member System V1.0.5</title>
+  <title>Admin | SK Alumni Member System V1.0.6</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="admin-page">
 <header class="topbar compact">
-  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.5</span></p></div></div>
+  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.6</span></p></div></div>
   <nav class="nav-actions"><a href="index.html" class="btn btn-ghost">หน้าเว็บหลัก</a><button id="logoutBtn" class="btn btn-soft hidden">ออกจากระบบ</button></nav>
 </header>
 
@@ -102,6 +102,9 @@
 <div id="memberDetailBody"></div><div class="member-detail-actions"><button type="button" class="btn btn-ghost" data-close-member-detail>ปิด</button><button type="button" id="detailPrintBtn" class="btn btn-primary">🖨️ พิมพ์ใบสมัคร / PDF</button></div>
 </div></div>
 
+
+<div id="memberEditModal" class="member-detail-modal hidden"><div class="member-detail-backdrop" data-close-member-edit></div><div class="member-detail-card"><div class="member-detail-head"><div><span class="eyebrow">EDIT MEMBER</span><h2>แก้ไขข้อมูลสมาชิก</h2></div><button class="detail-close" data-close-member-edit>×</button></div><form id="memberEditForm" class="settings-grid member-edit-form"><input type="hidden" name="memberCode"><label>คำนำหน้า<input name="prefix"></label><label>ชื่อ-สกุล<input name="fullName" required></label><label>ชื่ออาหรับ<input name="arabicName"></label><label>อีเมล<input name="email" type="email"></label><label>เบอร์โทรศัพท์<input name="phone" inputmode="numeric"></label><label>บ้านเลขที่<input name="houseNo"></label><label>หมู่<input name="moo"></label><label>ซอย<input name="soi"></label><label>ถนน<input name="road"></label><label>ตำบล / แขวง<input name="subdistrict"></label><label>อำเภอ / เขต<input name="district"></label><label>จังหวัด<input name="province"></label><label>รหัสไปรษณีย์<input name="postalCode" inputmode="numeric"></label><div class="settings-actions"><button type="button" class="btn btn-ghost" data-close-member-edit>ยกเลิก</button> <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button></div></form></div></div>
+
 <div id="newsEditModal" class="member-detail-modal hidden">
   <div class="member-detail-backdrop" data-close-news></div>
   <div class="member-detail-card news-edit-card">
@@ -123,7 +126,7 @@
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.5</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.6</div>
     </footer><div id="toast" class="toast"></div>
 <div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
 <script src="assets/js/app.js"></script>
