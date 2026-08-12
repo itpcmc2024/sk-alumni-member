@@ -73,7 +73,7 @@ async function saveStatus(memberCode){
   }catch(err){toast(err.message,'error');}finally{setLoading(false);}
 }
 async function deleteMember(memberCode,name){
-  if(!confirm(`ยืนยันลบสมาชิก ${memberCode}\n${name}\n\nข้อมูลจะถูกบันทึก Audit Log ก่อนลบ`)) return;
+  if(!(await uiConfirm('ยืนยันการลบสมาชิก',`รหัส ${memberCode}\n${name}\n\nระบบจะบันทึก Audit Log ก่อนลบ`))) return;
   try{
     setLoading(true); await api('adminDeleteMember',{token:adminToken,memberCode});
     toast('ลบสมาชิกแล้ว'); await refreshDashboard();
