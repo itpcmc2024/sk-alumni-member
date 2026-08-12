@@ -3,8 +3,8 @@
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.0',
-  API_URL: 'PASTE_YOUR_GAS_WEB_APP_URL_HERE'
+  VERSION: '1.0.1',
+  API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
 const $ = (s, p=document) => p.querySelector(s);
