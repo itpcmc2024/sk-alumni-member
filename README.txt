@@ -1,4 +1,4 @@
-SK Alumni Member System V1.0.1 - Hybrid
+SK Alumni Member System V1.0.2 - Hybrid
 ================================================
 Frontend : GitHub Pages
 Backend  : Google Apps Script
@@ -62,7 +62,7 @@ Drive Folder ID:
 7. หลังทดสอบผ่าน:
    เปลี่ยนรหัสผ่าน Admin โดยใช้ changeDefaultAdminPassword() ตามคำอธิบายใน Code.gs
 
-สิ่งที่มีใน V1.0.1
+สิ่งที่มีใน V1.0.2
 -----------------
 - หน้าแรก Responsive ขาว-เขียวพาสเทล
 - สมัครสมาชิก 3 Step
@@ -77,7 +77,7 @@ Drive Folder ID:
 - ลบสมาชิก + Audit Log
 - Tabs โครงสร้างสำหรับ Payment/Donation/Benefit/News/Accounting เตรียมไว้แล้ว
 
-ยังไม่รวมใน V1.0.1
+ยังไม่รวมใน V1.0.2
 ------------------
 - LINE LIFF
 - ระบบค้นหาที่อยู่จากฐานรหัสไปรษณีย์
@@ -89,7 +89,7 @@ Drive Folder ID:
 - สิทธิประโยชน์เต็มระบบ
 - บัญชีรายรับ-รายจ่าย/รายงานเต็มระบบ
 
-เวอร์ชัน: V1.0.1
+เวอร์ชัน: V1.0.2
 
 
 Repository:
@@ -97,3 +97,5 @@ https://github.com/itpcmc2024/sk-alumni-member
 
 GAS Web App:
 https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec
+
+V1.0.2: Approved homepage, original logo/mosque/QR assets, copyright by KimhanIkals.
