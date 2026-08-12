@@ -122,7 +122,7 @@ async function editMember(code){
 }
 async function saveMemberEdit(e){e.preventDefault();const f=e.currentTarget,btn=f.querySelector('button[type="submit"]');if(btn.disabled)return;btn.disabled=true;btn.textContent='กำลังบันทึก...';try{const data=Object.fromEntries(new FormData(f).entries());await api('adminUpdateMember',{token:adminToken,...data});$('#memberEditModal').classList.add('hidden');await uiAlert('บันทึกแล้ว','แก้ไขข้อมูลสมาชิกเรียบร้อย');await refreshDashboard()}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error')}finally{btn.disabled=false;btn.textContent='บันทึกข้อมูล'}}
 
-// Admin modules V1.0.7
+// Admin modules V1.0.8
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-admin-tab]').forEach(btn=>btn.addEventListener('click',()=>switchAdminTab(btn.dataset.adminTab)));
   $('#newNewsBtn')?.addEventListener('click',()=>openNewsEditor());
@@ -156,9 +156,47 @@ function openNewsEditor(n=null){
 }
 function editNews(id){openNewsEditor(adminNewsCache.find(x=>String(x.NewsId)===String(id)));}
 async function saveNews(e){
-  e.preventDefault(); const f=e.currentTarget,btn=f.querySelector('button[type="submit"]'); if(btn.disabled)return; btn.disabled=true; const old=btn.textContent; btn.textContent='กำลังบันทึก...';
-  try{setLoading(true);await api('adminSaveNews',{token:adminToken,newsId:f.newsId.value,category:f.category.value,title:f.title.value,content:f.content.value,active:f.active.checked});$('#newsEditModal').classList.add('hidden');await uiAlert('บันทึกแล้ว','ข่าวสารได้รับการบันทึกเรียบร้อย');loadAdminNews();}
-  catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error');}finally{setLoading(false);btn.disabled=false;btn.textContent=old;}
+  e.preventDefault();
+  const f=e.currentTarget;
+  const submit=f.querySelector('button[type="submit"]');
+  if(f.dataset.saving==='1') return;
+  const title=String(f.title.value||'').trim();
+  const content=String(f.content.value||'').trim();
+  if(!title || !content){
+    await uiAlert('ข้อมูลยังไม่ครบ','กรุณากรอกหัวข้อและรายละเอียดข่าว','warning');
+    return;
+  }
+  f.dataset.saving='1';
+  if(submit){
+    submit.disabled=true;
+    submit.dataset.oldText=submit.textContent;
+    submit.textContent='กำลังบันทึก...';
+  }
+  try{
+    setLoading(true);
+    const requestId=`${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    await api('adminSaveNews',{
+      token:adminToken,
+      requestId,
+      newsId:f.newsId.value,
+      category:f.category.value,
+      title,
+      content,
+      active:f.active.checked
+    });
+    $('#newsEditModal').classList.add('hidden');
+    await uiAlert('บันทึกแล้ว','ข่าวสารถูกบันทึกเรียบร้อย','success');
+    await loadAdminNews();
+  }catch(err){
+    await uiAlert('บันทึกข่าวไม่สำเร็จ',err.message||String(err),'error');
+  }finally{
+    setLoading(false);
+    f.dataset.saving='0';
+    if(submit){
+      submit.disabled=false;
+      submit.textContent=submit.dataset.oldText||'บันทึก';
+    }
+  }
 }
 async function deleteNews(id){
   if(!(await uiConfirm('ลบข่าวสาร','ยืนยันการลบข่าวนี้?')))return;
