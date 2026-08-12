@@ -1,1 +1,164 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#e9f7ef">
+  <title>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ (สุเหร่าเขียว)</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">SK</div>
+    <div>
+      <h1>สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์</h1>
+      <p>สุเหร่าเขียว • SK Alumni Member System <span class="version">V1.0.0</span></p>
+    </div>
+  </div>
+  <nav class="nav-actions">
+    <a href="#register" class="btn btn-primary">สมัครสมาชิก</a>
+    <a href="#status" class="btn btn-soft">ตรวจสอบสถานะ</a>
+    <a href="member.html" class="btn btn-ghost">สมาชิกของฉัน</a>
+    <a href="admin.html" class="btn btn-ghost">ผู้ดูแลระบบ</a>
+  </nav>
+</header>
 
+<main>
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">NURUL ISLAM ALUMNI ASSOCIATION</span>
+      <h2>เชื่อมสายสัมพันธ์ศิษย์เก่า<br>ดูแลสมาชิกอย่างเป็นระบบ</h2>
+      <p>สมัครสมาชิก ตรวจสอบสถานะ และจัดเก็บประวัติสมาชิกผ่านระบบออนไลน์ที่ใช้งานง่ายทั้งมือถือและคอมพิวเตอร์</p>
+      <div class="hero-actions">
+        <a href="#register" class="btn btn-primary btn-lg">สมัครสมาชิกใหม่</a>
+        <a href="#status" class="btn btn-white btn-lg">ตรวจสอบสถานะ</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="mini-card">
+        <span class="mini-icon">✓</span>
+        <div><b>สมัครออนไลน์</b><small>กรอกข้อมูลและแนบรูปได้ทันที</small></div>
+      </div>
+      <div class="mini-card">
+        <span class="mini-icon">ID</span>
+        <div><b>รหัสสมาชิกอัตโนมัติ</b><small>ตัวอย่าง 69-SK0001</small></div>
+      </div>
+      <div class="mini-card">
+        <span class="mini-icon">⌕</span>
+        <div><b>ติดตามสถานะ</b><small>ตรวจสอบด้วยรหัสสมาชิกหรืออีเมล</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section" id="news">
+    <div class="section-head">
+      <div><span class="eyebrow">NEWS</span><h3>ข่าวประชาสัมพันธ์</h3></div>
+    </div>
+    <div id="newsList" class="cards-grid">
+      <article class="info-card">
+        <span class="tag">ประกาศ</span>
+        <h4>ยินดีต้อนรับสู่ระบบสมาชิก</h4>
+        <p>ข่าวสารจากสมาคมจะแสดงในพื้นที่นี้เมื่อผู้ดูแลระบบเพิ่มข้อมูล</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="content-section muted" id="register">
+    <div class="form-shell">
+      <div class="section-head">
+        <div><span class="eyebrow">REGISTER</span><h3>สมัครสมาชิก</h3>
+          <p>กรอกข้อมูลให้ครบ ระบบจะสร้างรหัสสมาชิกให้อัตโนมัติ</p></div>
+      </div>
+
+      <div class="steps">
+        <div class="step active" data-step-indicator="1"><span>1</span>ข้อมูลส่วนตัว</div>
+        <div class="step" data-step-indicator="2"><span>2</span>ที่อยู่และติดต่อ</div>
+        <div class="step" data-step-indicator="3"><span>3</span>รูปถ่ายและยืนยัน</div>
+      </div>
+
+      <form id="registerForm" novalidate>
+        <div class="form-step active" data-step="1">
+          <div class="form-grid">
+            <label>คำนำหน้า
+              <select name="prefix" required>
+                <option value="">-- เลือก --</option>
+                <option>นาย</option><option>นาง</option><option>นางสาว</option>
+                <option>เด็กชาย</option><option>เด็กหญิง</option><option>อื่นๆ</option>
+              </select>
+            </label>
+            <label class="span-2">ชื่อ-สกุล
+              <input name="fullName" required placeholder="ชื่อและนามสกุล">
+            </label>
+            <label class="span-3">ชื่ออาหรับ
+              <input name="arabicName" placeholder="ถ้ามี">
+            </label>
+          </div>
+        </div>
+
+        <div class="form-step" data-step="2">
+          <div class="form-grid">
+            <label>บ้านเลขที่<input name="houseNo"></label>
+            <label>หมู่<input name="moo"></label>
+            <label>ซอย<input name="soi"></label>
+            <label>ถนน<input name="road"></label>
+            <label>ตำบล / แขวง<input name="subdistrict" required></label>
+            <label>อำเภอ / เขต<input name="district" required></label>
+            <label>จังหวัด<input name="province" required></label>
+            <label>รหัสไปรษณีย์<input name="postalCode" inputmode="numeric" maxlength="5" required></label>
+            <label class="span-2">อีเมล<input name="email" type="email" required placeholder="name@example.com"></label>
+            <label>เบอร์โทรศัพท์<input name="phone" inputmode="tel" placeholder="08xxxxxxxx"></label>
+          </div>
+        </div>
+
+        <div class="form-step" data-step="3">
+          <div class="form-grid">
+            <label class="span-3">รูปถ่ายสมาชิก
+              <input id="photoInput" name="photo" type="file" accept="image/*">
+              <small>รองรับ JPG / PNG แนะนำไม่เกิน 3 MB</small>
+            </label>
+            <div class="span-3 consent">
+              <label class="check-row">
+                <input type="checkbox" name="consent" required>
+                <span>ข้าพเจ้ายืนยันว่าข้อมูลที่กรอกถูกต้อง และยินยอมให้สมาคมจัดเก็บข้อมูลเพื่อการบริหารสมาชิก</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-footer">
+          <button type="button" id="prevBtn" class="btn btn-ghost" hidden>ย้อนกลับ</button>
+          <div class="spacer"></div>
+          <button type="button" id="nextBtn" class="btn btn-primary">ถัดไป</button>
+          <button type="submit" id="submitBtn" class="btn btn-primary" hidden>ยืนยันการสมัคร</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="content-section" id="status">
+    <div class="status-shell">
+      <div>
+        <span class="eyebrow">CHECK STATUS</span>
+        <h3>ตรวจสอบสถานะการสมัคร</h3>
+        <p>กรอกรหัสสมาชิก เช่น 69-SK0001 หรืออีเมลที่ใช้สมัคร</p>
+      </div>
+      <form id="statusForm" class="inline-form">
+        <input id="statusQuery" required placeholder="รหัสสมาชิก หรือ อีเมล">
+        <button class="btn btn-primary">ตรวจสอบ</button>
+      </form>
+      <div id="statusResult"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <b>สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ (สุเหร่าเขียว)</b>
+  <span>SK Alumni Member System V1.0.0</span>
+</footer>
+
+<div id="toast" class="toast" aria-live="polite"></div>
+<div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
