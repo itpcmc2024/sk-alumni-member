@@ -1,4 +1,4 @@
-SK Alumni Member System V1.0.3 - Hybrid
+SK Alumni Member System V1.0.4 - Hybrid
 ================================================
 Frontend : GitHub Pages
 Backend  : Google Apps Script
@@ -62,7 +62,7 @@ Drive Folder ID:
 7. หลังทดสอบผ่าน:
    เปลี่ยนรหัสผ่าน Admin โดยใช้ changeDefaultAdminPassword() ตามคำอธิบายใน Code.gs
 
-สิ่งที่มีใน V1.0.3
+สิ่งที่มีใน V1.0.4
 -----------------
 - หน้าแรก Responsive ขาว-เขียวพาสเทล
 - สมัครสมาชิก 3 Step
@@ -77,7 +77,7 @@ Drive Folder ID:
 - ลบสมาชิก + Audit Log
 - Tabs โครงสร้างสำหรับ Payment/Donation/Benefit/News/Accounting เตรียมไว้แล้ว
 
-ยังไม่รวมใน V1.0.3
+ยังไม่รวมใน V1.0.4
 ------------------
 - LINE LIFF
 - ระบบค้นหาที่อยู่จากฐานรหัสไปรษณีย์
@@ -89,7 +89,7 @@ Drive Folder ID:
 - สิทธิประโยชน์เต็มระบบ
 - บัญชีรายรับ-รายจ่าย/รายงานเต็มระบบ
 
-เวอร์ชัน: V1.0.3
+เวอร์ชัน: V1.0.4
 
 
 Repository:
@@ -98,9 +98,9 @@ https://github.com/itpcmc2024/sk-alumni-member
 GAS Web App:
 https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec
 
-V1.0.3: Approved homepage, original logo/mosque/QR assets, copyright by KimhanIkals.
+V1.0.4: Approved homepage, original logo/mosque/QR assets, copyright by KimhanIkals.
 
-V1.0.3 - Address & UX Fix
+V1.0.4 - Address & UX Fix
 --------------------------
 1. mosque-reference.jpg แสดงด้วย <img> โดยตรง ไม่พึ่ง CSS relative background path
 2. ที่อยู่เลือกแบบ รหัสไปรษณีย์ -> จังหวัด -> อำเภอ/เขต -> ตำบล/แขวง
@@ -109,3 +109,5 @@ V1.0.3 - Address & UX Fix
 4. Step 3 ซ่อนปุ่ม "ถัดไป" เหลือเฉพาะ "ยืนยันการสมัคร"
 5. Alert/Confirm เปลี่ยนเป็น Modal UI
 6. Admin ทดสอบ: username admin / password admin1234
+
+V1.0.4: searchable postcode, admin detail, print/save PDF, pastel status cards.
