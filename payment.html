@@ -1,4 +1,5 @@
-<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="assets/css/style.css"><title>ชำระค่าสมาชิก</title></head><body class="v105-page inner-page"><header class="v105-header">
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="assets/css/style.css"><title>ชำระค่าสมาชิก | V1.0.12</title></head><body class="v105-page inner-page"><header class="v105-header">
       <a class="v105-brand" href="index.html">
         <img src="assets/img/association-logo.jpg" alt="โลโก้สมาคม">
         <b>สมาคมศิษย์เก่า<br>นูรุ้ลอิสลามสัมพันธ์<br><span>(สุเหร่าเขียว)</span></b>
@@ -6,13 +7,23 @@
       <nav><a class="" href="index.html"><span>🕌</span><small>หน้าแรก</small></a><a class="active" href="register.html"><span>🧕🏻</span><small>สมัครสมาชิก</small></a><a class="" href="status.html"><span>🔎</span><small>ตรวจสอบสถานะ</small></a><a class="" href="donation.html"><span>🤲🏻</span><small>บริจาค</small></a><a class="" href="member.html"><span>🎁</span><small>สิทธิประโยชน์</small></a><a class="" href="index.html#news"><span>📣</span><small>ข่าวสาร</small></a><a class="" href="admin.html"><span>🌙</span><small>เข้าสู่ระบบ</small></a></nav>
       <a class="linebtn" href="register.html"><b>LINE</b>&nbsp; สมัครผ่าน LINE &nbsp;›</a>
     </header>
-<main class="standalone-main"><section class="standalone-card payment-page"><div class="page-intro"><h1>ชำระค่าสมาชิก</h1><p>สำหรับชำระค่าสมาชิก</p></div><div class="payment-page-grid"><div class="payment-qr-card"><img src="assets/img/membership-payment-qr.jpg"></div><div class="payment-info-card"><span>ชื่อบัญชี</span><h2>วิโรจน์ เซ็นเยาะ</h2><p>สำหรับชำระค่าสมาชิก</p><a class="btn btn-primary" href="assets/img/membership-payment-qr.jpg" target="_blank">เปิด QR ขนาดเต็ม</a></div></div></section></main><footer class="v105-footer">
+
+<main class="standalone-main"><section class="standalone-card smart-payment-page"><div class="page-intro"><span>💳 PAYMENT</span><h1>แจ้งชำระค่าสมาชิก</h1><p>กรอกรหัสสมาชิก ระบบจะดึงข้อมูลให้อัตโนมัติ</p></div>
+<div class="donation-layout"><div class="donation-form-card"><form id="paymentForm" class="donation-form">
+<div class="member-lookup-box"><label>รหัสสมาชิก<input id="paymentMemberCode" name="memberCode" placeholder="69-SK0001" maxlength="9" required></label><div id="paymentLookupStatus" class="member-lookup-status">กรอกรหัสสมาชิก ระบบจะค้นหาข้อมูลให้</div></div>
+<div class="form-grid"><label class="span-2">ชื่อ-สกุล<input id="paymentName" readonly></label><label>เบอร์โทรศัพท์<input id="paymentPhone" readonly></label><label class="span-2">อีเมล<input id="paymentEmail" readonly></label>
+<label>หัวข้อรายการ<select id="paymentTopic" name="paymentTopicId" required></select></label><label>จำนวนเงิน (บาท)<input id="paymentAmount" name="amount" type="number" min="1" step="0.01" required></label><label>วันที่/เวลาโอน<input name="paidAt" type="datetime-local" required></label>
+<label class="span-3">หมายเหตุ<textarea name="note" rows="3"></textarea></label><label class="span-3 slip-upload">แนบสลิป<input id="paymentSlip" type="file" accept="image/*" required><small>JPG / PNG ไม่เกิน 3 MB</small></label></div>
+<div id="paymentSlipPreviewBox" class="slip-preview-box hidden"><img id="paymentSlipPreview"><div><b>สลิปพร้อมส่งตรวจ</b><small>เจ้าหน้าที่จะตรวจสอบก่อนยืนยัน</small></div></div>
+<label class="check-row donation-consent"><input name="consent" type="checkbox" required><span>ข้าพเจ้ายืนยันว่าข้อมูลการชำระถูกต้อง</span></label><div class="donation-submit-row"><button id="paymentSubmitBtn" class="btn btn-primary" disabled>ส่งแจ้งชำระ</button></div>
+</form></div><aside class="donation-qr-side"><div class="donation-qr-title">QR พร้อมเพย์</div><img src="assets/img/membership-payment-qr.jpg"><small>ชื่อบัญชี</small><h2>วิโรจน์ เซ็นเยาะ</h2><p>สำหรับชำระค่าสมาชิก</p></aside></div></section></main><footer class="v105-footer">
       <div class="footer-logo-wrap"><img src="assets/img/association-logo.jpg" alt="โลโก้สมาคม"></div>
       <div class="footer-copy">
         <b>สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ (สุเหร่าเขียว)</b>
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.11</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.12</div>
     </footer>
-<div id="toast" class="toast"></div></body></html>
+
+<div id="toast" class="toast"></div><div id="loading" class="loading hidden"><div class="spinner"></div></div><script src="assets/js/app.js"></script><script src="assets/js/payment.js"></script></body></html>
