@@ -122,7 +122,7 @@ async function editMember(code){
 }
 async function saveMemberEdit(e){e.preventDefault();const f=e.currentTarget,btn=f.querySelector('button[type="submit"]');if(btn.disabled)return;btn.disabled=true;btn.textContent='กำลังบันทึก...';try{const data=Object.fromEntries(new FormData(f).entries());await api('adminUpdateMember',{token:adminToken,...data});$('#memberEditModal').classList.add('hidden');await uiAlert('บันทึกแล้ว','แก้ไขข้อมูลสมาชิกเรียบร้อย');await refreshDashboard()}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error')}finally{btn.disabled=false;btn.textContent='บันทึกข้อมูล'}}
 
-// Admin modules V1.0.11
+// Admin modules V1.0.12
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-admin-tab]').forEach(btn=>btn.addEventListener('click',()=>switchAdminTab(btn.dataset.adminTab)));
   $('#newNewsBtn')?.addEventListener('click',()=>openNewsEditor());
@@ -137,7 +137,7 @@ function switchAdminTab(name){
   document.querySelectorAll('[data-admin-panel]').forEach(x=>x.classList.toggle('hidden',x.dataset.adminPanel!==name));
   if(name==='news') loadAdminNews();
   if(name==='media') loadMedia();
-  if(name==='settings') loadSettings();
+  if(name==='settings') loadSettings();if(name==='topics') loadAdminTopics();
 }
 let adminNewsCache=[];
 async function loadAdminNews(){
@@ -162,6 +162,7 @@ async function saveNews(e){
   if(f.dataset.saving==='1') return;
   const title=String(f.title.value||'').trim();
   const content=String(f.content.value||'').trim();
+  const imageFile=$('#newsImageInput')?.files?.[0]||null;
   if(!title || !content){
     await uiAlert('ข้อมูลยังไม่ครบ','กรุณากรอกหัวข้อและรายละเอียดข่าว','warning');
     return;
@@ -175,15 +176,9 @@ async function saveNews(e){
   try{
     setLoading(true);
     const requestId=`${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    await api('adminSaveNews',{
-      token:adminToken,
-      requestId,
-      newsId:f.newsId.value,
-      category:f.category.value,
-      title,
-      content,
-      active:f.active.checked
-    });
+    const newsPayload={token:adminToken,requestId,newsId:f.newsId.value,category:f.category.value,title,content,active:f.active.checked};
+    if(imageFile){newsPayload.imageDataUrl=await fileToDataUrl(imageFile);newsPayload.imageName=imageFile.name;}
+    await api('adminSaveNews',newsPayload);
     $('#newsEditModal').classList.add('hidden');
     await uiAlert('บันทึกแล้ว','ข่าวสารถูกบันทึกเรียบร้อย','success');
     await loadAdminNews();
@@ -224,3 +219,7 @@ async function saveSettings(e){
 }
 
 function formatThaiPhone(v){const d=String(v||'').replace(/\D/g,'');if(d.length===10)return `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`;if(d.length===9)return `${d.slice(0,2)}-${d.slice(2,5)}-${d.slice(5)}`;return String(v||'-');}
+
+async function loadAdminTopics(){try{const o=await api('adminTopicsList',{token:adminToken});const render=(host,rows,type)=>{$(host).innerHTML=(rows||[]).map(x=>`<div class="topic-row"><div><b>${escapeHtml(x.title)}</b>${type==='payment'?`<small>${Number(x.amount||0).toLocaleString('th-TH')} บาท</small>`:''}</div><button class="btn btn-danger" onclick="deleteAdminTopic('${type}','${escapeHtml(x.id)}')">ลบ</button></div>`).join('')||'<div class="empty">ยังไม่มีหัวข้อ</div>';};render('#paymentTopicList',o.paymentTopics,'payment');render('#donationTopicList',o.donationTopics,'donation');}catch(e){uiAlert('โหลดหัวข้อไม่สำเร็จ',e.message,'error');}}
+document.addEventListener('DOMContentLoaded',()=>{$('#paymentTopicForm')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;await api('adminSaveTopic',{token:adminToken,type:'payment',title:f.title.value,amount:f.amount.value});f.reset();loadAdminTopics();});$('#donationTopicForm')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;await api('adminSaveTopic',{token:adminToken,type:'donation',title:f.title.value});f.reset();loadAdminTopics();});});
+async function deleteAdminTopic(type,id){if(!(await uiConfirm('ลบหัวข้อ','ยืนยันการลบ?')))return;await api('adminDeleteTopic',{token:adminToken,type,id});loadAdminTopics();}
