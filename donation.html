@@ -1,18 +1,60 @@
-<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="assets/css/style.css"><title>ร่วมบริจาค</title></head><body class="v105-page inner-page"><header class="v105-header">
+<!doctype html><html lang="th"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<title>บริจาค | SK Alumni Member System V1.0.10</title></head>
+<body class="v105-page inner-page"><header class="v105-header">
       <a class="v105-brand" href="index.html">
         <img src="assets/img/association-logo.jpg" alt="โลโก้สมาคม">
         <b>สมาคมศิษย์เก่า<br>นูรุ้ลอิสลามสัมพันธ์<br><span>(สุเหร่าเขียว)</span></b>
       </a>
-      <nav><a class="" href="index.html"><span>🕌</span><small>หน้าแรก</small></a><a class="active" href="register.html"><span>🧕🏻</span><small>สมัครสมาชิก</small></a><a class="" href="status.html"><span>🔎</span><small>ตรวจสอบสถานะ</small></a><a class="" href="index.html#payment"><span>🤲🏻</span><small>บริจาค</small></a><a class="" href="member.html"><span>🎁</span><small>สิทธิประโยชน์</small></a><a class="" href="index.html#news"><span>📣</span><small>ข่าวสาร</small></a><a class="" href="admin.html"><span>🌙</span><small>เข้าสู่ระบบ</small></a></nav>
+      <nav><a class="" href="index.html"><span>🕌</span><small>หน้าแรก</small></a><a class="" href="register.html"><span>🧕🏻</span><small>สมัครสมาชิก</small></a><a class="" href="status.html"><span>🔎</span><small>ตรวจสอบสถานะ</small></a><a class="active" href="donation.html"><span>🤲🏻</span><small>บริจาค</small></a><a class="" href="member.html"><span>🎁</span><small>สิทธิประโยชน์</small></a><a class="" href="index.html#news"><span>📣</span><small>ข่าวสาร</small></a><a class="" href="admin.html"><span>🌙</span><small>เข้าสู่ระบบ</small></a></nav>
       <a class="linebtn" href="register.html"><b>LINE</b>&nbsp; สมัครผ่าน LINE &nbsp;›</a>
     </header>
-<main class="standalone-main"><section class="standalone-card payment-page"><div class="page-intro"><h1>ร่วมบริจาค</h1><p>สำหรับเงินบริจาค</p></div><div class="payment-page-grid"><div class="payment-qr-card"><img src="assets/img/membership-payment-qr.jpg"></div><div class="payment-info-card"><span>ชื่อบัญชี</span><h2>วิโรจน์ เซ็นเยาะ</h2><p>สำหรับเงินบริจาค</p><a class="btn btn-primary" href="assets/img/membership-payment-qr.jpg" target="_blank">เปิด QR ขนาดเต็ม</a></div></div></section></main><footer class="v105-footer">
+
+<main class="standalone-main">
+<section class="standalone-card donation-page">
+  <div class="page-intro donation-intro"><span>🤲🏻 DONATION</span><h1>ร่วมบริจาค</h1><p>ร่วมสนับสนุนกิจกรรม การศึกษา และการดำเนินงานของสมาคม 💚</p></div>
+  <div class="donation-layout">
+    <div class="donation-form-card">
+      <div class="donation-section-head"><div class="donation-mini-art"><img src="assets/img/cute-donation.jpg" alt=""></div><div><h2>แจ้งการบริจาค</h2><p>กรอกข้อมูลและแนบสลิป หลังบันทึกข้อมูลระบบจะออกเลขที่รายการให้</p></div></div>
+      <form id="donationForm" class="donation-form">
+        <div class="form-grid">
+          <label class="span-2">ชื่อผู้บริจาค<input name="donorName" required placeholder="ชื่อ-สกุล"></label>
+          <label>รหัสสมาชิก <small>(ถ้ามี)</small><input name="memberCode" placeholder="69-SK0001"></label>
+          <label>เบอร์โทรศัพท์<input name="phone" type="tel" inputmode="tel" placeholder="08xxxxxxxx"></label>
+          <label class="span-2">อีเมล<input name="email" type="email" placeholder="name@example.com"></label>
+          <label>หัวข้อการบริจาค<select id="donationTopic" name="topicId" required><option value="">กำลังโหลด...</option></select></label>
+          <label>จำนวนเงิน (บาท)<input name="amount" type="number" inputmode="decimal" min="1" step="0.01" required placeholder="500"></label>
+          <label>วันที่โอน<input name="donatedAt" type="datetime-local" required></label>
+          <label class="span-3">หมายเหตุ<textarea name="note" rows="3" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)"></textarea></label>
+          <label class="span-3 slip-upload">แนบสลิปการโอนเงิน<input id="donationSlip" name="slip" type="file" accept="image/*" required><small>รองรับ JPG / PNG ขนาดไม่เกิน 3 MB</small></label>
+        </div>
+        <label class="check-row donation-consent"><input name="consent" type="checkbox" required><span>ข้าพเจ้ายืนยันว่าข้อมูลการบริจาคและหลักฐานการโอนเงินถูกต้อง</span></label>
+        <div class="donation-submit-row"><button id="donationSubmitBtn" class="btn btn-primary" type="submit" disabled>💚 ส่งข้อมูลการบริจาค</button></div>
+      </form>
+    </div>
+    <aside class="donation-qr-side">
+      <div class="donation-qr-title">💳 QR พร้อมเพย์</div>
+      <img src="assets/img/membership-payment-qr.jpg" alt="QR พร้อมเพย์สำหรับบริจาค">
+      <small>ชื่อบัญชี</small><h2>วิโรจน์ เซ็นเยาะ</h2>
+      <p>สำหรับเงินบริจาค / สนับสนุนกิจกรรมสมาคม</p>
+      <a class="btn btn-primary" href="assets/img/membership-payment-qr.jpg" target="_blank">เปิด QR ขนาดเต็ม</a>
+      <div class="donation-note">🌷 ขอบคุณทุกการสนับสนุนของท่าน</div>
+    </aside>
+  </div>
+</section></main><footer class="v105-footer">
       <div class="footer-logo-wrap"><img src="assets/img/association-logo.jpg" alt="โลโก้สมาคม"></div>
       <div class="footer-copy">
         <b>สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ (สุเหร่าเขียว)</b>
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.9</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.10</div>
     </footer>
-<div id="toast" class="toast"></div></body></html>
+
+<div id="toast" class="toast"></div>
+<div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังบันทึก...</span></div>
+<script src="assets/js/app.js"></script><script src="assets/js/donation.js"></script>
+</body></html>
