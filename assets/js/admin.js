@@ -122,7 +122,7 @@ async function editMember(code){
 }
 async function saveMemberEdit(e){e.preventDefault();const f=e.currentTarget,btn=f.querySelector('button[type="submit"]');if(btn.disabled)return;btn.disabled=true;btn.textContent='กำลังบันทึก...';try{const data=Object.fromEntries(new FormData(f).entries());await api('adminUpdateMember',{token:adminToken,...data});$('#memberEditModal').classList.add('hidden');await uiAlert('บันทึกแล้ว','แก้ไขข้อมูลสมาชิกเรียบร้อย');await refreshDashboard()}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error')}finally{btn.disabled=false;btn.textContent='บันทึกข้อมูล'}}
 
-// Admin modules V1.0.12
+// Admin modules V1.0.13
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-admin-tab]').forEach(btn=>btn.addEventListener('click',()=>switchAdminTab(btn.dataset.adminTab)));
   $('#newNewsBtn')?.addEventListener('click',()=>openNewsEditor());
@@ -223,3 +223,6 @@ function formatThaiPhone(v){const d=String(v||'').replace(/\D/g,'');if(d.length=
 async function loadAdminTopics(){try{const o=await api('adminTopicsList',{token:adminToken});const render=(host,rows,type)=>{$(host).innerHTML=(rows||[]).map(x=>`<div class="topic-row"><div><b>${escapeHtml(x.title)}</b>${type==='payment'?`<small>${Number(x.amount||0).toLocaleString('th-TH')} บาท</small>`:''}</div><button class="btn btn-danger" onclick="deleteAdminTopic('${type}','${escapeHtml(x.id)}')">ลบ</button></div>`).join('')||'<div class="empty">ยังไม่มีหัวข้อ</div>';};render('#paymentTopicList',o.paymentTopics,'payment');render('#donationTopicList',o.donationTopics,'donation');}catch(e){uiAlert('โหลดหัวข้อไม่สำเร็จ',e.message,'error');}}
 document.addEventListener('DOMContentLoaded',()=>{$('#paymentTopicForm')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;await api('adminSaveTopic',{token:adminToken,type:'payment',title:f.title.value,amount:f.amount.value});f.reset();loadAdminTopics();});$('#donationTopicForm')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;await api('adminSaveTopic',{token:adminToken,type:'donation',title:f.title.value});f.reset();loadAdminTopics();});});
 async function deleteAdminTopic(type,id){if(!(await uiConfirm('ลบหัวข้อ','ยืนยันการลบ?')))return;await api('adminDeleteTopic',{token:adminToken,type,id});loadAdminTopics();}
+
+async function loadFinanceSummary(){try{const o=await api('adminFinanceSummary',{token:adminToken}),s=o.summary||{};if($('#sumPaymentCount'))$('#sumPaymentCount').textContent=Number(s.paymentCount||0).toLocaleString('th-TH');if($('#sumPaymentAmount'))$('#sumPaymentAmount').textContent=Number(s.paymentAmount||0).toLocaleString('th-TH')+' บาท';if($('#sumDonationCount'))$('#sumDonationCount').textContent=Number(s.donationCount||0).toLocaleString('th-TH');if($('#sumDonationAmount'))$('#sumDonationAmount').textContent=Number(s.donationAmount||0).toLocaleString('th-TH')+' บาท';}catch(e){console.warn(e)}}
+document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{if(typeof adminToken!=='undefined'&&adminToken)loadFinanceSummary();},800);});
