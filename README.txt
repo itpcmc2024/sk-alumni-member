@@ -1,4 +1,4 @@
-SK Alumni Member System V1.0.9 - Hybrid
+SK Alumni Member System V1.0.10 - Hybrid
 ================================================
 Frontend : GitHub Pages
 Backend  : Google Apps Script
@@ -62,7 +62,7 @@ Drive Folder ID:
 7. หลังทดสอบผ่าน:
    เปลี่ยนรหัสผ่าน Admin โดยใช้ changeDefaultAdminPassword() ตามคำอธิบายใน Code.gs
 
-สิ่งที่มีใน V1.0.9
+สิ่งที่มีใน V1.0.10
 -----------------
 - หน้าแรก Responsive ขาว-เขียวพาสเทล
 - สมัครสมาชิก 3 Step
@@ -77,7 +77,7 @@ Drive Folder ID:
 - ลบสมาชิก + Audit Log
 - Tabs โครงสร้างสำหรับ Payment/Donation/Benefit/News/Accounting เตรียมไว้แล้ว
 
-ยังไม่รวมใน V1.0.9
+ยังไม่รวมใน V1.0.10
 ------------------
 - LINE LIFF
 - ระบบค้นหาที่อยู่จากฐานรหัสไปรษณีย์
@@ -89,7 +89,7 @@ Drive Folder ID:
 - สิทธิประโยชน์เต็มระบบ
 - บัญชีรายรับ-รายจ่าย/รายงานเต็มระบบ
 
-เวอร์ชัน: V1.0.9
+เวอร์ชัน: V1.0.10
 
 
 Repository:
@@ -98,9 +98,9 @@ https://github.com/itpcmc2024/sk-alumni-member
 GAS Web App:
 https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec
 
-V1.0.9: Approved homepage, original logo/mosque/QR assets, copyright by KimhanIkals.
+V1.0.10: Approved homepage, original logo/mosque/QR assets, copyright by KimhanIkals.
 
-V1.0.9 - Address & UX Fix
+V1.0.10 - Address & UX Fix
 --------------------------
 1. mosque-reference.jpg แสดงด้วย <img> โดยตรง ไม่พึ่ง CSS relative background path
 2. ที่อยู่เลือกแบบ รหัสไปรษณีย์ -> จังหวัด -> อำเภอ/เขต -> ตำบล/แขวง
@@ -110,9 +110,9 @@ V1.0.9 - Address & UX Fix
 5. Alert/Confirm เปลี่ยนเป็น Modal UI
 6. Admin ทดสอบ: username admin / password admin1234
 
-V1.0.9: searchable postcode, admin detail, print/save PDF, pastel status cards.
+V1.0.10: searchable postcode, admin detail, print/save PDF, pastel status cards.
 
-V1.0.9 - Multi Page + Admin Phase 1
+V1.0.10 - Multi Page + Admin Phase 1
 - register.html / status.html แยกหน้า
 - ทุกหน้ามี Header + Footer
 - ปุ่มยืนยันสมัคร disabled จนกว่าจะติ๊ก Consent
@@ -121,9 +121,9 @@ V1.0.9 - Multi Page + Admin Phase 1
 - รูปสมาชิกปรับเป็น Drive thumbnail + public link; มี repairMemberPhotoSharing()
 - Admin: Members / News CRUD / Media list / Settings
 
-V1.0.9: member detail layout, print fixes, news fixed scroll, register steps moved, payment/donation pages, member sort/pagination, Settings text format.
+V1.0.10: member detail layout, print fixes, news fixed scroll, register steps moved, payment/donation pages, member sort/pagination, Settings text format.
 
-V1.0.9 - Cute Homepage & News Fix
+V1.0.10 - Cute Homepage & News Fix
 ---------------------------------
 - Remove registration-step / payment cards from homepage
 - Refresh feature cards with cute friendly visual icons
@@ -131,7 +131,7 @@ V1.0.9 - Cute Homepage & News Fix
 - Fix admin news save, disable button while saving
 - GAS requestId + LockService + recent duplicate protection
 
-V1.0.9 - Cute Visual Polish
+V1.0.10 - Cute Visual Polish
 ---------------------------
 - Homepage registration-step and QR/payment block removed completely.
 - Homepage news displays only 3 items in a compact fixed-height panel.
@@ -139,3 +139,12 @@ V1.0.9 - Cute Visual Polish
 - Six cute homepage card illustrations are included as local assets under assets/img/menu/.
 - Illustrations are derived from the approved homepage visual reference, so GitHub Pages does not depend on external image hosts.
 - News anti-double-submit behavior from V1.0.8 is retained.
+
+V1.0.10 - Cute Assets + Donation Form
+--------------------------------------
+- Cute homepage art moved to assets/img root: cute-register/status/payment/donation/benefits/news.jpg
+- Register journey has four illustrated cards again.
+- Homepage news renders all returned news; about 3 are visible and overflow scrolls inside the panel.
+- Donation page now has donor form, donation topic, amount, transfer date, slip upload, QR and submit flow.
+- GAS adds publicDonationTopics + submitDonation, saves slips to DonationSlips and donation rows to Donations.
+- Donation topics are seeded on setupSystem().
