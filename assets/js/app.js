@@ -1,9 +1,9 @@
 /*
- SK Alumni Member System V1.0.9 - Hybrid
+ SK Alumni Member System V1.0.10 - Hybrid
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.9',
+  VERSION: '1.0.10',
   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
@@ -190,7 +190,7 @@ async function loadNews(){
     const out=await api('publicNews',{});
     const list=out.news||[];
     window.SK_PUBLIC_NEWS=list;
-    renderHomeNews(list.slice(0,3));
+    renderHomeNews(list);
     const btn=$('#showAllNewsBtn');
     if(btn){
       btn.onclick=()=>openAllNews(list);
