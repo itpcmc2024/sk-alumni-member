@@ -1,9 +1,9 @@
 /*
- SK Alumni Member System V1.0.11 - Hybrid
+ SK Alumni Member System V1.0.12 - Hybrid
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.11',
+  VERSION: '1.0.12',
   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
@@ -202,17 +202,24 @@ async function loadNews(){
   }
 }
 function renderHomeNews(list){
-  const host=$('#newsList'); if(!host) return;
+  const host=$('#newsList'); if(!host)return;
   if(!list.length){host.innerHTML='<div class="news-empty">ยังไม่มีข่าวสาร</div>';return;}
-  host.innerHTML=list.map((n,i)=>`<article class="home-news-item">
-    <div class="news-thumb ${['mint','pink','blue','amber'][i%4]}">${newsEmoji(n.category)}</div>
-    <div class="home-news-copy">
-      <div class="news-meta"><span>${escapeHtml(n.category||'ข่าวสาร')}</span>${n.publishDate?`<time>${escapeHtml(formatShortDate(n.publishDate))}</time>`:''}</div>
-      <h4>${escapeHtml(n.title||'')}</h4>
-      <p>${escapeHtml(String(n.content||'').slice(0,92))}${String(n.content||'').length>92?'…':''}</p>
-    </div>
-    <button class="news-arrow" type="button" onclick='openNewsDetail(${JSON.stringify(JSON.stringify(n))})'>›</button>
-  </article>`).join('');
+  host.innerHTML=list.map(n=>{
+    const cat=newsCategoryClass(n.category);
+    const thumb=n.imageUrl?`<img src="${escapeHtml(n.imageUrl)}" alt="" loading="lazy">`:newsEmoji(n.category);
+    return `<article class="home-news-item">
+      <div class="news-thumb ${cat}">${thumb}</div>
+      <div class="home-news-copy"><div class="news-meta"><span class="${cat}">${escapeHtml(n.category||'ข่าวสาร')}</span>${n.publishDate?`<time>${escapeHtml(formatShortDate(n.publishDate))}</time>`:''}</div>
+      <h4>${escapeHtml(n.title||'')}</h4><p>${escapeHtml(String(n.content||'').slice(0,92))}${String(n.content||'').length>92?'…':''}</p></div>
+      <button class="news-arrow" type="button" onclick='openNewsDetail(${JSON.stringify(JSON.stringify(n))})'>›</button>
+    </article>`;
+  }).join('');
+}
+function newsCategoryClass(category){
+  const c=String(category||'').trim();
+  if(c==='กิจกรรม')return 'cat-activity';
+  if(c==='ประกาศ')return 'cat-announce';
+  return 'cat-news';
 }
 function newsEmoji(category){
   const c=String(category||'');
@@ -244,4 +251,13 @@ function openAllNews(list){
   ok.onclick=()=>{modal.classList.add('hidden');ok.onclick=null;};
 }
 
-async function loadPublicStats(){if(!apiReady())return;try{const o=await api('publicStats',{});$('#homeStatTotal').textContent=Number(o.stats.total||0).toLocaleString('th-TH');$('#homeStatActive').textContent=Number(o.stats.active||0).toLocaleString('th-TH')}catch(e){console.warn(e)}}
+async function loadPublicStats(){
+  if(!apiReady())return;
+  try{
+    const o=await api('publicStats',{}),s=o.stats||{};
+    $('#homeStatTotal').textContent=Number(s.total||0).toLocaleString('th-TH');
+    $('#homeStatYear').textContent=Number(s.thisYear||0).toLocaleString('th-TH');
+    $('#homeStatNew').textContent=Number(s.newThisMonth||0).toLocaleString('th-TH');
+    $('#homeStatActivities').textContent=Number(s.activitiesThisYear||0).toLocaleString('th-TH');
+  }catch(e){console.warn(e)}
+}
