@@ -122,7 +122,7 @@ async function editMember(code){
 }
 async function saveMemberEdit(e){e.preventDefault();const f=e.currentTarget,btn=f.querySelector('button[type="submit"]');if(btn.disabled)return;btn.disabled=true;btn.textContent='กำลังบันทึก...';try{const data=Object.fromEntries(new FormData(f).entries());await api('adminUpdateMember',{token:adminToken,...data});$('#memberEditModal').classList.add('hidden');await uiAlert('บันทึกแล้ว','แก้ไขข้อมูลสมาชิกเรียบร้อย');await refreshDashboard()}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error')}finally{btn.disabled=false;btn.textContent='บันทึกข้อมูล'}}
 
-// Admin modules V1.0.14
+// Admin modules V1.0.15
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-admin-tab]').forEach(btn=>btn.addEventListener('click',()=>switchAdminTab(btn.dataset.adminTab)));
   $('#newNewsBtn')?.addEventListener('click',()=>openNewsEditor());
@@ -139,6 +139,9 @@ function switchAdminTab(name){
   if(name==='donations') loadAdminTransactions('donation');
   if(name==='news') loadAdminNews();
   if(name==='media') loadMedia();
+  if(name==='webmanage'){initWebManager();loadHomeContentAdmin();}
+  if(name==='accounting') loadAccounting();
+  if(name==='reports') loadAccountingReport();
   if(name==='settings') loadSettings();if(name==='topics') loadAdminTopics();
 }
 let adminNewsCache=[];
@@ -266,3 +269,21 @@ async function verifyTransaction(type,id,decision){
   }catch(e){uiAlert('บันทึกไม่สำเร็จ',e.message,'error');}
   finally{setLoading(false);}
 }
+
+
+function initWebManager(){
+  [['#legacyNewsPanel','#webNewsMount'],['#legacyMediaPanel','#webMediaMount'],['#legacyTopicsPanel','#webTopicsMount']].forEach(([src,dst])=>{const s=$(src),d=$(dst);if(s&&d&&s.parentElement!==d){s.classList.remove('hidden');s.removeAttribute('data-admin-panel');d.appendChild(s);}});
+  document.querySelectorAll('[data-web-sub]').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('[data-web-sub]').forEach(x=>x.classList.toggle('active',x===btn));document.querySelectorAll('[data-web-panel]').forEach(p=>p.classList.toggle('hidden',p.dataset.webPanel!==btn.dataset.webSub));if(btn.dataset.webSub==='news')loadAdminNews();if(btn.dataset.webSub==='media')loadAdminMedia();if(btn.dataset.webSub==='topics')loadAdminTopics();if(btn.dataset.webSub==='homecontent')loadHomeContentAdmin();});
+}
+async function loadHomeContentAdmin(){try{const o=await api('adminHomeContentGet',{token:adminToken}),c=o.content||{},f=$('#homeContentForm');if(!f)return;['heroChip','heroTitle','heroSub','heroQuote','quoteText'].forEach(k=>{if(f.elements[k])f.elements[k].value=c[k]||'';});}catch(e){uiAlert('โหลดข้อความหน้าเว็บไม่สำเร็จ',e.message,'error');}}
+document.addEventListener('DOMContentLoaded',()=>{
+ $('#homeContentForm')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,p={token:adminToken};['heroChip','heroTitle','heroSub','heroQuote','quoteText'].forEach(k=>p[k]=f.elements[k].value);try{await api('adminHomeContentSave',p);await uiAlert('บันทึกแล้ว','อัปเดตข้อความหน้าเว็บเรียบร้อย','success');}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error');}});
+ $('#accountingForm')?.addEventListener('submit',saveAccountingEntry);$('#accountingSearch')?.addEventListener('input',renderAccountingRows);$('#accountingTypeFilter')?.addEventListener('change',renderAccountingRows);$('#reportRunBtn')?.addEventListener('click',loadAccountingReport);$('#reportPreset')?.addEventListener('change',()=>{applyReportPreset();loadAccountingReport();});
+});
+let accountingRows=[];
+async function saveAccountingEntry(e){e.preventDefault();const f=e.currentTarget;try{const p={token:adminToken};['type','date','category','source','amount','reference','note'].forEach(k=>p[k]=f.elements[k].value);await api('adminAccountingSave',p);f.reset();await uiAlert('บันทึกแล้ว','เพิ่มรายการบัญชีเรียบร้อย','success');loadAccounting();}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error');}}
+async function loadAccounting(){try{const o=await api('adminAccountingList',{token:adminToken});accountingRows=o.rows||[];renderAccountingRows();const f=$('#accountingForm');if(f&&f.elements.date&&!f.elements.date.value)f.elements.date.value=new Date().toISOString().slice(0,10);}catch(e){uiAlert('โหลดบัญชีไม่สำเร็จ',e.message,'error');}}
+function renderAccountingRows(){const host=$('#accountingList');if(!host)return;const q=String($('#accountingSearch')?.value||'').toLowerCase(),type=$('#accountingTypeFilter')?.value||'';const rows=accountingRows.filter(x=>(!type||x.type===type)&&(!q||[x.category,x.source,x.reference,x.note].join(' ').toLowerCase().includes(q)));host.innerHTML=rows.length?rows.map(x=>`<div class="account-row ${x.type==='รายรับ'?'income':'expense'}"><div><b>${escapeHtml(x.type)}</b><small>${escapeHtml(x.date||'')}</small></div><div><b>${escapeHtml(x.category||'-')}</b><small>${escapeHtml(x.source||'-')}</small></div><div><b>${Number(x.amount||0).toLocaleString('th-TH')} บาท</b><small>${escapeHtml(x.reference||'')}</small></div><div><small>${escapeHtml(x.note||'')}</small></div><button class="btn btn-danger" onclick="deleteAccountingEntry('${escapeHtml(x.id)}')">ลบ</button></div>`).join(''):'<div class="empty">ยังไม่มีรายการบัญชี</div>';}
+async function deleteAccountingEntry(id){if(!(await uiConfirm('ลบรายการบัญชี','ยืนยันการลบรายการนี้?')))return;try{await api('adminAccountingDelete',{token:adminToken,id});loadAccounting();}catch(e){uiAlert('ลบไม่สำเร็จ',e.message,'error');}}
+function applyReportPreset(){const preset=$('#reportPreset')?.value||'custom',from=$('#reportFrom'),to=$('#reportTo');if(!from||!to||preset==='custom')return;const d=new Date(),fmt=x=>{const y=x.getFullYear(),m=String(x.getMonth()+1).padStart(2,'0'),day=String(x.getDate()).padStart(2,'0');return `${y}-${m}-${day}`};if(preset==='all'){from.value='';to.value='';return;}if(preset==='today'){from.value=to.value=fmt(d);return;}if(preset==='month'){from.value=fmt(new Date(d.getFullYear(),d.getMonth(),1));to.value=fmt(new Date(d.getFullYear(),d.getMonth()+1,0));return;}if(preset==='year'){from.value=fmt(new Date(d.getFullYear(),0,1));to.value=fmt(new Date(d.getFullYear(),11,31));}}
+async function loadAccountingReport(){try{applyReportPreset();const o=await api('adminAccountingReport',{token:adminToken,from:$('#reportFrom')?.value||'',to:$('#reportTo')?.value||''}),r=o.report||{};if($('#reportIncome'))$('#reportIncome').textContent=Number(r.income||0).toLocaleString('th-TH');if($('#reportExpense'))$('#reportExpense').textContent=Number(r.expense||0).toLocaleString('th-TH');if($('#reportNet'))$('#reportNet').textContent=Number(r.net||0).toLocaleString('th-TH');const host=$('#reportBreakdown');if(host)host.innerHTML=(r.byCategory||[]).map(x=>`<div class="report-row"><span>${escapeHtml(x.type)} · ${escapeHtml(x.category)}</span><b>${Number(x.amount||0).toLocaleString('th-TH')} บาท</b></div>`).join('')||'<div class="empty">ยังไม่มีข้อมูลในช่วงนี้</div>';}catch(e){uiAlert('ประมวลผลรายงานไม่สำเร็จ',e.message,'error');}}
