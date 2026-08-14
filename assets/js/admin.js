@@ -122,7 +122,7 @@ async function editMember(code){
 }
 async function saveMemberEdit(e){e.preventDefault();const f=e.currentTarget,btn=f.querySelector('button[type="submit"]');if(btn.disabled)return;btn.disabled=true;btn.textContent='กำลังบันทึก...';try{const data=Object.fromEntries(new FormData(f).entries());await api('adminUpdateMember',{token:adminToken,...data});$('#memberEditModal').classList.add('hidden');await uiAlert('บันทึกแล้ว','แก้ไขข้อมูลสมาชิกเรียบร้อย');await refreshDashboard()}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error')}finally{btn.disabled=false;btn.textContent='บันทึกข้อมูล'}}
 
-// Admin modules V1.0.16
+// Admin modules V1.0.17
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-admin-tab]').forEach(btn=>btn.addEventListener('click',()=>switchAdminTab(btn.dataset.adminTab)));
   $('#newNewsBtn')?.addEventListener('click',()=>openNewsEditor());
@@ -141,6 +141,7 @@ function switchAdminTab(name){
   if(name==='media') loadMedia();
   if(name==='webmanage'){initWebManager();loadHomeContentAdmin();}
   if(name==='accounting') loadAccounting();
+  if(name==='benefits') loadBenefitsAdmin();
   if(name==='reports') loadAccountingReport();
   if(name==='settings') loadSettings();if(name==='topics') loadAdminTopics();
 }
@@ -369,7 +370,7 @@ async function loadAccountingReport(){
     if($('#reportIncome'))$('#reportIncome').textContent=Number(r.income||0).toLocaleString('th-TH');
     if($('#reportExpense'))$('#reportExpense').textContent=Number(r.expense||0).toLocaleString('th-TH');
     if($('#reportNet'))$('#reportNet').textContent=Number(r.net||0).toLocaleString('th-TH');
-    const host=$('#reportBreakdown');if(host)host.innerHTML=(r.byCategory||[]).map(x=>`<div class="report-row"><span>${escapeHtml(x.type)} · ${escapeHtml(x.category)}</span><b>${Number(x.amount||0).toLocaleString('th-TH')} บาท</b></div>`).join('')||'<div class="empty">ยังไม่มีข้อมูลในช่วงนี้</div>';
+    const host=$('#reportBreakdown');if(host)host.innerHTML=(r.byCategory||[]).map(x=>`<div class="report-row ${x.type==='รายรับ'?'income':'expense'}"><span>${escapeHtml(x.type)} · ${escapeHtml(x.category)}</span><b>${Number(x.amount||0).toLocaleString('th-TH')} บาท</b></div>`).join('')||'<div class="empty">ยังไม่มีข้อมูลในช่วงนี้</div>';
   }catch(e){uiAlert('ประมวลผลรายงานไม่สำเร็จ',e.message,'error');}
 }
 function exportAccountingCsv(){
@@ -384,3 +385,5 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-close-transaction-detail]'))$('#transactionDetailModal')?.classList.add('hidden');
   if(e.target.closest('[data-close-media-preview]'))$('#mediaPreviewModal')?.classList.add('hidden');
 });
+
+let benefitAdminRows=[];async function loadBenefitsAdmin(){try{const o=await api('adminBenefitsList',{token:adminToken});benefitAdminRows=o.benefits||[];const host=$('#benefitList'),sel=$('#benefitUsageSelect');if(host)host.innerHTML=benefitAdminRows.map(x=>`<div class="benefit-row"><div><b>${escapeHtml(x.title)}</b><small>${escapeHtml(x.description||'')} • ${Number(x.defaultAmount||0).toLocaleString('th-TH')} บาท</small></div><button class="btn btn-view" onclick="editBenefit('${escapeHtml(x.id)}')">แก้ไข</button></div>`).join('')||'<div class="empty">ยังไม่มีสิทธิประโยชน์</div>';if(sel)sel.innerHTML=benefitAdminRows.filter(x=>x.active).map(x=>`<option value="${escapeHtml(x.id)}">${escapeHtml(x.title)}</option>`).join('');const u=await api('adminBenefitUsageList',{token:adminToken});renderBenefitUsage(u.rows||[]);}catch(e){uiAlert('โหลดสิทธิประโยชน์ไม่สำเร็จ',e.message,'error');}}function editBenefit(id){const x=benefitAdminRows.find(b=>b.id===id),f=$('#benefitForm');if(!x||!f)return;f.benefitId.value=x.id;f.title.value=x.title;f.description.value=x.description||'';f.defaultAmount.value=x.defaultAmount||0;f.active.checked=!!x.active;}function renderBenefitUsage(rows){const host=$('#benefitUsageList');if(!host)return;host.innerHTML=rows.length?rows.map(x=>`<div class="benefit-row"><div><b>${escapeHtml(x.memberCode)} · ${escapeHtml(x.title)}</b><small>${escapeHtml(x.date)} • ${Number(x.amount||0).toLocaleString('th-TH')} บาท • ${escapeHtml(x.note||'')}</small></div></div>`).join(''):'<div class="empty">ยังไม่มีประวัติการใช้สิทธิ</div>';}document.addEventListener('DOMContentLoaded',()=>{$('#benefitForm')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;try{await api('adminBenefitSave',{token:adminToken,benefitId:f.benefitId.value,title:f.title.value,description:f.description.value,defaultAmount:f.defaultAmount.value,active:f.active.checked});f.reset();f.active.checked=true;loadBenefitsAdmin();}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error');}});$('#benefitUsageForm')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;try{await api('adminBenefitUsageSave',{token:adminToken,memberCode:f.memberCode.value,benefitId:f.benefitId.value,usedAt:f.usedAt.value,amount:f.amount.value,note:f.note.value,postExpense:f.postExpense.checked});f.reset();f.postExpense.checked=true;loadBenefitsAdmin();await loadFinanceSummary();}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error');}});});
