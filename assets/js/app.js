@@ -1,9 +1,9 @@
 /*
- SK Alumni Member System V1.0.19 - Hybrid
+ SK Alumni Member System V1.0.20 - Hybrid
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.19',
+  VERSION: '1.0.20',
   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
@@ -83,9 +83,11 @@ async function api(action, payload={}){
   return data;
 }
 function statusClass(status){
-  if(status==='สมาชิกสมบูรณ์') return 'active';
-  if(status==='ไม่อนุมัติ') return 'rejected';
-  return '';
+  if(status==='สมาชิกสมบูรณ์')return 'active';
+  if(status==='ไม่อนุมัติ')return 'rejected';
+  if(status==='รอตรวจสอบการชำระ')return 'payment-pending';
+  if(status==='รอชำระค่าสมาชิก')return 'payment-due';
+  return 'pending';
 }
 function formatDate(v){
   if(!v) return '-';
@@ -96,94 +98,49 @@ function escapeHtml(v=''){
   return String(v).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 }
 async function fileToDataUrl(file){
-  if(!file) return '';
-  if(file.size > 3*1024*1024) throw new Error('รูปถ่ายต้องมีขนาดไม่เกิน 3 MB');
-  return new Promise((resolve,reject)=>{
-    const r=new FileReader(); r.onload=()=>resolve(r.result); r.onerror=()=>reject(new Error('อ่านไฟล์รูปไม่สำเร็จ')); r.readAsDataURL(file);
-  });
+  if(!file)return '';
+  if(file.size>8*1024*1024)throw new Error('ไฟล์ต้นฉบับมีขนาดเกิน 8 MB กรุณาเลือกรูปที่เล็กลง');
+  if(!String(file.type||'').startsWith('image/'))throw new Error('รองรับเฉพาะไฟล์รูปภาพ');
+  const raw=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('อ่านไฟล์รูปไม่สำเร็จ'));r.readAsDataURL(file);});
+  const img=new Image();await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(new Error('เปิดไฟล์รูปไม่สำเร็จ'));img.src=raw;});
+  const maxSide=1400,scale=Math.min(1,maxSide/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));
+  const c=document.createElement('canvas');c.width=Math.max(1,Math.round((img.naturalWidth||img.width)*scale));c.height=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+  let q=.84,out=c.toDataURL('image/jpeg',q);while(out.length>1.65*1024*1024&&q>.58){q-=.07;out=c.toDataURL('image/jpeg',q);}return out;
 }
 
 document.addEventListener('DOMContentLoaded', ()=>{
   if($('#registerForm')) initRegistration();
   if($('#statusForm')) initStatusCheck();
   if($('#newsList')) loadNews();
+  document.querySelectorAll('[data-open-news-center]').forEach(a=>a.addEventListener('click',e=>{if(location.pathname.endsWith('index.html')||location.pathname.endsWith('/')){e.preventDefault();const list=window.SK_PUBLIC_NEWS||[];if(list.length)openNewsCenter(list);else location.hash='news-center';}}));
   if($('#homeStatTotal')) loadPublicStats();
   loadPublicHomeContent();
 });
 
 function initRegistration(){
-  let step=1;
-  const form=$('#registerForm'), prev=$('#prevBtn'), next=$('#nextBtn'), submit=$('#submitBtn');
-  const consent=form.querySelector('input[name="consent"]');
-  function syncConsentButton(){
-    if(!submit) return;
-    const checked=!!consent?.checked;
-    submit.disabled=!checked;
-    submit.classList.toggle('is-disabled',!checked);
-    submit.setAttribute('aria-disabled',String(!checked));
-  }
-  consent?.addEventListener('change',syncConsentButton);
-  syncConsentButton();
-  function paint(){
-    $$('.form-step').forEach(x=>x.classList.toggle('active', Number(x.dataset.step)===step));
-    $$('[data-step-indicator]').forEach(x=>x.classList.toggle('active', Number(x.dataset.stepIndicator)===step));
-    prev.hidden=step===1;
-    next.hidden=step>=3;
-    submit.hidden=step!==3;
-    next.classList.toggle('hidden', step>=3);
-    submit.classList.toggle('hidden', step!==3);
-  }
-  async function validateCurrent(){
-    const panel=$(`.form-step[data-step="${step}"]`);
-    const fields=$$('input,select,textarea',panel);
-    for(const f of fields){
-      if(!f.checkValidity()){
-        const label=f.closest('label');
-        const fieldName=(label?.childNodes?.[0]?.textContent||f.name||'ข้อมูล').trim();
-        let msg=`กรุณาตรวจสอบช่อง “${fieldName}”`;
-        if(f.validity.valueMissing) msg=`กรุณากรอก/เลือก “${fieldName}”`;
-        else if(f.validity.typeMismatch) msg=`รูปแบบ “${fieldName}” ไม่ถูกต้อง`;
-        await uiAlert('ข้อมูลยังไม่ครบ',msg,'warning');
-        f.focus();
-        return false;
-      }
-    }
-    return true;
-  }
-  next.addEventListener('click',async()=>{ if(await validateCurrent()){step=Math.min(3,step+1);paint();window.scrollTo({top:$('#register').offsetTop-90,behavior:'smooth'});} });
-  prev.addEventListener('click',()=>{step--;paint();});
-  form.addEventListener('submit',async e=>{
-    e.preventDefault(); if(!(await validateCurrent())) return;
-    try{
-      setLoading(true);
-      const fd=new FormData(form), payload=Object.fromEntries(fd.entries());
-      delete payload.photo;
-      const file=$('#photoInput').files[0];
-      if(file){ payload.photoDataUrl=await fileToDataUrl(file); payload.photoName=file.name; }
-      const out=await api('registerMember',payload);
-      form.reset(); step=1; paint(); syncConsentButton();
-      $('#statusQuery').value=out.member.memberCode;
-      await uiAlert('สมัครสมาชิกเรียบร้อย 🎉',`รหัสสมาชิก: ${out.member.memberCode}
-สถานะ: ${out.member.status}
-
-กรุณาจดรหัสสมาชิกนี้ไว้สำหรับตรวจสอบสถานะ`,'success');
-      location.hash='status';
-    }catch(err){ toast(err.message,'error'); }finally{setLoading(false);}
-  });
+  let step=1;const form=$('#registerForm'),prev=$('#prevBtn'),next=$('#nextBtn'),submit=$('#submitBtn'),consent=form.querySelector('input[name="consent"]'),photo=$('#photoInput'),prefix=form.elements.prefix,prefixOther=$('#prefixOtherInput'),prefixOtherWrap=$('#prefixOtherWrap');
+  function syncPrefixOther(){const other=prefix?.value==='อื่นๆ';prefixOtherWrap?.classList.toggle('hidden',!other);if(prefixOther){prefixOther.required=other;if(!other)prefixOther.value='';}}
+  prefix?.addEventListener('change',syncPrefixOther);syncPrefixOther();
+  function syncSubmitButton(){if(!submit)return;const ready=!!consent?.checked&&!!photo?.files?.length;submit.disabled=!ready;submit.classList.toggle('is-disabled',!ready);submit.setAttribute('aria-disabled',String(!ready));}
+  consent?.addEventListener('change',syncSubmitButton);photo?.addEventListener('change',async()=>{if(photo.files?.[0]?.size>8*1024*1024){photo.value='';await uiAlert('รูปมีขนาดใหญ่เกินไป','กรุณาเลือกรูปต้นฉบับไม่เกิน 8 MB ระบบจะย่อรูปให้อัตโนมัติ','warning');}syncSubmitButton();});syncSubmitButton();
+  function paint(){$$('.form-step').forEach(x=>x.classList.toggle('active',Number(x.dataset.step)===step));$$('[data-step-indicator]').forEach(x=>x.classList.toggle('active',Number(x.dataset.stepIndicator)===step));prev.hidden=step===1;next.hidden=step>=3;submit.hidden=step!==3;next.classList.toggle('hidden',step>=3);submit.classList.toggle('hidden',step!==3);syncSubmitButton();}
+  async function validateCurrent(){const panel=$(`.form-step[data-step="${step}"]`);if(step===3&&!photo?.files?.length){await uiAlert('ยังไม่มีรูปถ่าย','กรุณาแนบรูปถ่ายก่อนยืนยันการลงทะเบียน','warning');return false;}for(const f of $$('input,select,textarea',panel)){if(!f.checkValidity()){const label=f.closest('label'),fieldName=(label?.childNodes?.[0]?.textContent||f.name||'ข้อมูล').trim();let msg=`กรุณาตรวจสอบช่อง “${fieldName}”`;if(f.validity.valueMissing)msg=`กรุณากรอก/เลือก “${fieldName}”`;else if(f.validity.typeMismatch)msg=`รูปแบบ “${fieldName}” ไม่ถูกต้อง`;await uiAlert('ข้อมูลยังไม่ครบ',msg,'warning');f.focus();return false;}}return true;}
+  next.addEventListener('click',async()=>{if(await validateCurrent()){step=Math.min(3,step+1);paint();window.scrollTo({top:$('#register')?.offsetTop-90||0,behavior:'smooth'});}});
+  prev.addEventListener('click',()=>{step=Math.max(1,step-1);paint();});
+  form.addEventListener('submit',async e=>{e.preventDefault();if(!(await validateCurrent()))return;try{setLoading(true);const fd=new FormData(form),payload=Object.fromEntries(fd.entries());delete payload.photo;if(payload.prefix==='อื่นๆ')payload.prefix=String(payload.prefixOther||'').trim();delete payload.prefixOther;if(!payload.prefix)throw new Error('กรุณากรอกคำนำหน้า');const file=photo.files[0];payload.photoDataUrl=await fileToDataUrl(file);payload.photoName=file.name;const out=await api('registerMember',payload);const address=[payload.houseNo,payload.moo?`หมู่ ${payload.moo}`:'',payload.soi?`ซอย ${payload.soi}`:'',payload.road?`ถนน ${payload.road}`:'',payload.subdistrict?`ตำบล/แขวง ${payload.subdistrict}`:'',payload.district?`อำเภอ/เขต ${payload.district}`:'',payload.province?`จังหวัด ${payload.province}`:'',payload.postalCode].filter(Boolean).join(' ');const receipt={memberCode:out.member.memberCode,status:out.member.status,fullName:payload.fullName,prefix:payload.prefix,arabicName:payload.arabicName||'',email:payload.email,phone:payload.phone||'',photoDataUrl:payload.photoDataUrl,registeredAt:out.member.registeredAt,address};sessionStorage.setItem('skLastRegistration',JSON.stringify(receipt));form.reset();step=1;syncPrefixOther();paint();syncSubmitButton();await showRegistrationPaymentStep(out.member);}catch(err){toast(err.message,'error');}finally{setLoading(false);}});
 }
+
+async function getRegistrationConfig(){try{return await api('publicRegistrationConfig',{});}catch(e){return {fee:0,promptPay:'',topicId:'PAY-TOPIC-001'};}}
+function buildPromptPayPayload(target,amount){const digits=String(target||'').replace(/\D/g,'');if(!digits)return '';const fmt=(id,val)=>id+String(val.length).padStart(2,'0')+val;let proxy='';if(digits.length===10)proxy=fmt('01','0066'+digits.slice(1));else if(digits.length===13)proxy=fmt('02',digits);else return '';const merchant=fmt('00','A000000677010111')+proxy;let payload=fmt('00','01')+fmt('01','12')+fmt('29',merchant)+fmt('58','TH')+fmt('53','764');if(Number(amount)>0)payload+=fmt('54',Number(amount).toFixed(2));payload+=fmt('62',fmt('07','SKALUMNI'))+'6304';return payload+crc16PromptPay(payload);}
+function crc16PromptPay(str){let crc=0xFFFF;for(let i=0;i<str.length;i++){crc^=str.charCodeAt(i)<<8;for(let j=0;j<8;j++){crc=(crc&0x8000)?((crc<<1)^0x1021):(crc<<1);crc&=0xFFFF;}}return crc.toString(16).toUpperCase().padStart(4,'0');}
+function dynamicQrUrl(payload){return payload?`https://quickchart.io/qr?size=360&margin=1&text=${encodeURIComponent(payload)}`:'';}
+async function showRegistrationPaymentStep(member){const cfg=await getRegistrationConfig(),fee=Number(cfg.fee||0),payload=buildPromptPayPayload(cfg.promptPay,fee),qr=dynamicQrUrl(payload)||'assets/img/membership-payment-qr.jpg';let modal=$('#registrationPaymentModal');if(!modal){modal=document.createElement('div');modal.id='registrationPaymentModal';modal.className='member-detail-modal hidden';document.body.appendChild(modal);}modal.innerHTML=`<div class="member-detail-backdrop"></div><div class="member-detail-card registration-payment-card"><div class="member-detail-head"><div><span class="eyebrow">STEP 3 • PAYMENT</span><h2>ชำระค่าสมาชิก</h2></div></div><div class="registration-payment-body"><div class="registration-temp-code"><small>รหัสสมาชิกชั่วคราว</small><strong>${escapeHtml(member.memberCode)}</strong><span>${escapeHtml(member.fullName||'')}</span></div><div class="registration-qr-box"><img src="${qr}" alt="QR ชำระค่าสมาชิก"><div><small>ค่าสมาชิกตามการตั้งค่าระบบ</small><strong>${fee>0?fee.toLocaleString('th-TH')+' บาท':'ตรวจสอบยอดในหน้าชำระ'}</strong>${payload?'<span class="qr-lock-note">✓ QR นี้กำหนดยอดอัตโนมัติ</span>':'<span class="qr-lock-note muted">QR สำรอง - กรุณาตรวจสอบยอดก่อนโอน</span>'}</div></div><div class="registration-message">หลังจากสนับสนุนค่าสมาชิกแล้ว คุณสามารถดาวน์โหลดหลักฐานการเป็นสมาชิกศิษย์เก่าฯ และเข้าร่วมสิทธิประโยชน์อื่นๆ ได้ค่ะ</div></div><div class="member-detail-actions registration-payment-actions"><button class="btn btn-ghost" type="button" id="payLaterBtn">ชำระภายหลัง</button><button class="btn btn-primary" type="button" id="payNowBtn">แจ้งชำระค่าสมาชิก</button></div></div>`;modal.classList.remove('hidden');$('#payNowBtn').onclick=()=>{location.href=`payment.html?memberCode=${encodeURIComponent(member.memberCode)}&from=register`;};$('#payLaterBtn').onclick=async()=>{modal.classList.add('hidden');await uiAlert('บันทึกรหัสสมาชิกชั่วคราวแล้ว',`รหัสสมาชิกชั่วคราวของคุณคือ ${member.memberCode}\n\nหลังจากสนับสนุนค่าสมาชิกแล้ว คุณสามารถดาวน์โหลดหลักฐานการเป็นสมาชิกศิษย์เก่าฯ และเข้าร่วมสิทธิประโยชน์อื่นๆ ได้ค่ะ`,'success');location.href=`status.html?memberCode=${encodeURIComponent(member.memberCode)}`;};}
+
 function initStatusCheck(){
-  $('#statusForm').addEventListener('submit',async e=>{
-    e.preventDefault();
-    const query=$('#statusQuery').value.trim(); if(!query) return;
-    try{
-      setLoading(true); const out=await api('checkStatus',{query}); const m=out.member;
-      $('#statusResult').innerHTML=`<div class="status-card">
-        <span class="status-badge ${statusClass(m.status)}">${escapeHtml(m.status)}</span>
-        <h4>${escapeHtml(m.memberCode)} • ${escapeHtml(m.fullName)}</h4>
-        <p>วันที่สมัคร: ${escapeHtml(formatDate(m.registeredAt))}</p>
-      </div>`;
-    }catch(err){ $('#statusResult').innerHTML=''; toast(err.message,'error'); }finally{setLoading(false);}
-  });
+ const params=new URLSearchParams(location.search),preset=params.get('memberCode');if(preset&&$('#statusQuery'))$('#statusQuery').value=preset;
+ $('#statusForm').addEventListener('submit',async e=>{e.preventDefault();const query=$('#statusQuery').value.trim();if(!query)return;try{setLoading(true);const out=await api('checkStatus',{query}),m=out.member,cls=statusClass(m.status);$('#statusResult').innerHTML=`<div class="status-card status-card-${cls||'pending'}"><div class="status-result-top"><span class="status-badge ${cls}">${escapeHtml(m.status)}</span><strong>${escapeHtml(m.memberCode)}</strong></div><h4>${escapeHtml(m.fullName)}</h4><p>วันที่ลงทะเบียน: ${escapeHtml(formatDate(m.registeredAt))}</p>${m.status==='สมาชิกสมบูรณ์'?'<div class="status-success-note">✓ ยืนยันสมาชิกสมบูรณ์แล้ว สามารถเข้าสู่ข้อมูลสมาชิกและใช้สิทธิประโยชน์ได้</div>':''}</div>`;}catch(err){$('#statusResult').innerHTML='';toast(err.message,'error');}finally{setLoading(false);}});
+ if(preset)$('#statusForm').requestSubmit();
 }
 async function loadNews(){
   if(!apiReady()) return;
@@ -192,6 +149,7 @@ async function loadNews(){
     const list=out.news||[];
     window.SK_PUBLIC_NEWS=list;
     renderHomeNews(list);
+    if(location.hash==='#news-center')openNewsCenter(list);
     const btn=$('#showAllNewsBtn');
     if(btn){
       btn.onclick=()=>openNewsCenter(list);
