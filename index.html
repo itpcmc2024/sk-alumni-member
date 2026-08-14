@@ -5,7 +5,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
-<title>SK Alumni Member System V1.0.18</title>
+<title>SK Alumni Member System V1.0.19</title>
 </head>
 <body class="v105-page home-page v114-home">
 <header class="v105-header">
@@ -85,7 +85,7 @@
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.18</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.19</div>
     </footer>
 
 <div id="newsPopupModal" class="member-detail-modal hidden">
@@ -98,12 +98,16 @@
     <div id="newsPopupBody"></div>
   </div>
 </div>
-<div id="imageLightbox" class="image-lightbox hidden">
+<div id="imageLightbox" class="image-lightbox hidden" aria-modal="true" role="dialog">
   <div class="image-lightbox-backdrop" data-close-image-lightbox></div>
-  <button class="image-lightbox-close" data-close-image-lightbox>×</button>
-  <img id="imageLightboxImg" alt="รูปข่าว">
+  <button class="image-lightbox-close" type="button" data-close-image-lightbox aria-label="ปิด">×</button>
+  <button id="imageLightboxPrev" class="image-lightbox-nav prev" type="button" aria-label="ภาพก่อนหน้า">‹</button>
+  <figure class="image-lightbox-figure">
+    <img id="imageLightboxImg" alt="รูปข่าว">
+    <figcaption><span id="imageLightboxCounter"></span><span id="imageLightboxCaption"></span></figcaption>
+  </figure>
+  <button id="imageLightboxNext" class="image-lightbox-nav next" type="button" aria-label="ภาพถัดไป">›</button>
 </div>
-
 <div id="toast" class="toast"></div><div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
 <script src="assets/js/app.js"></script>
 </body></html>
