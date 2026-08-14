@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin | SK Alumni Member System V1.0.14</title>
+  <title>Admin | SK Alumni Member System V1.0.15</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="admin-page">
 <header class="topbar compact">
-  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.14</span></p></div></div>
+  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.15</span></p></div></div>
   <nav class="nav-actions"><a href="index.html" class="btn btn-ghost">หน้าเว็บหลัก</a><button id="logoutBtn" class="btn btn-soft hidden">ออกจากระบบ</button></nav>
 </header>
 
@@ -29,9 +29,10 @@
     <button class="admin-tab active" data-admin-tab="members">👥 สมาชิก</button>
     <button class="admin-tab" data-admin-tab="payments">💳 ชำระเงิน</button>
     <button class="admin-tab" data-admin-tab="donations">💚 บริจาค</button>
-    <button class="admin-tab" data-admin-tab="news">📣 ข่าวสาร</button>
-    <button class="admin-tab" data-admin-tab="media">🖼️ ไฟล์ภาพ</button>
-    <button class="admin-tab" data-admin-tab="topics">หัวข้อรายการ</button><button class="admin-tab" data-admin-tab="settings">⚙️ ตั้งค่าระบบ</button>
+    <button class="admin-tab" data-admin-tab="webmanage">🌐 จัดการหน้าเว็บ</button>
+    <button class="admin-tab" data-admin-tab="accounting">💰 บัญชีรายรับ-รายจ่าย</button>
+    <button class="admin-tab" data-admin-tab="reports">📊 รายงานสรุป</button>
+    <button class="admin-tab" data-admin-tab="settings">⚙️ ตั้งค่าระบบ</button>
   </div>
   <div data-admin-panel="members">
   <div class="dashboard-heading">
@@ -85,22 +86,64 @@
     <div id="adminDonationList" class="transaction-list"></div>
   </div>
 </div>
-<div data-admin-panel="news" class="hidden">
+<div id="legacyNewsPanel" data-admin-panel="news" class="hidden">
   <div class="panel admin-module">
     <div class="panel-head"><div><h3>📣 จัดการข่าวสาร</h3><p>เพิ่ม แก้ไข และลบข่าวที่แสดงหน้าเว็บไซต์</p></div><button id="newNewsBtn" class="btn btn-primary">+ เพิ่มข่าว</button></div>
     <div id="newsAdminList" class="admin-card-list"></div>
   </div>
 </div>
-<div data-admin-panel="media" class="hidden">
+<div id="legacyMediaPanel" data-admin-panel="media" class="hidden">
   <div class="panel admin-module">
     <div class="panel-head"><div><h3>🖼️ จัดการไฟล์ภาพ</h3><p>ดูไฟล์ที่ระบบเก็บไว้ใน Google Drive (Phase 1)</p></div><button id="refreshMediaBtn" class="btn btn-white">รีเฟรช</button></div>
     <div id="mediaAdminList" class="media-grid"></div>
   </div>
 </div>
-<div data-admin-panel="topics" class="hidden"><div class="panel admin-module"><div class="panel-head"><div><h3>จัดการหัวข้อรายการ</h3><p>ชำระค่าสมาชิกและการบริจาค</p></div></div><div class="topic-admin-grid">
+<div id="legacyTopicsPanel" data-admin-panel="topics" class="hidden"><div class="panel admin-module"><div class="panel-head"><div><h3>จัดการหัวข้อรายการ</h3><p>ชำระค่าสมาชิกและการบริจาค</p></div></div><div class="topic-admin-grid">
 <section><h4>หัวข้อชำระค่าสมาชิก</h4><form id="paymentTopicForm" class="topic-inline-form"><input name="title" required placeholder="ชื่อหัวข้อ"><input name="amount" type="number" min="0" step="0.01" placeholder="ยอดเงิน"><button class="btn btn-primary">เพิ่ม</button></form><div id="paymentTopicList"></div></section>
 <section><h4>หัวข้อบริจาค</h4><form id="donationTopicForm" class="topic-inline-form"><input name="title" required placeholder="ชื่อหัวข้อ"><button class="btn btn-primary">เพิ่ม</button></form><div id="donationTopicList"></div></section>
-</div></div></div><div data-admin-panel="settings" class="hidden">
+</div></div></div>
+<div data-admin-panel="webmanage" class="hidden">
+  <div class="panel admin-module">
+    <div class="panel-head"><div><h3>🌐 จัดการหน้าเว็บ</h3><p>รวมเครื่องมือที่ใช้ดูแลหน้าเว็บไซต์ไว้ในที่เดียว</p></div></div>
+    <div class="webmanage-menu">
+      <button type="button" data-web-sub="homecontent" class="active">✏️ ข้อความหน้าแรก</button>
+      <button type="button" data-web-sub="news">📣 จัดการข่าวสาร</button>
+      <button type="button" data-web-sub="media">🖼️ จัดการไฟล์ภาพในระบบ</button>
+      <button type="button" data-web-sub="topics">🗂️ จัดการหัวข้อรายการ</button>
+    </div>
+    <section data-web-panel="homecontent" class="webmanage-subpanel">
+      <h4>ข้อความหน้าแรก</h4>
+      <form id="homeContentForm" class="settings-form">
+        <label>ป้ายหัวเรื่อง<input name="heroChip"></label><label>ชื่อหลัก<input name="heroTitle"></label>
+        <label>บรรทัดรอง<input name="heroSub"></label><label>ข้อความใต้หัวเรื่อง<textarea name="heroQuote" rows="2"></textarea></label>
+        <label>ข้อความคำคมกลางหน้า<textarea name="quoteText" rows="4"></textarea></label>
+        <button class="btn btn-primary" type="submit">บันทึกข้อความหน้าแรก</button>
+      </form>
+    </section>
+    <section data-web-panel="news" class="webmanage-subpanel hidden"><div id="webNewsMount"></div></section>
+    <section data-web-panel="media" class="webmanage-subpanel hidden"><div id="webMediaMount"></div></section>
+    <section data-web-panel="topics" class="webmanage-subpanel hidden"><div id="webTopicsMount"></div></section>
+  </div>
+</div>
+<div data-admin-panel="accounting" class="hidden">
+  <div class="panel admin-module">
+    <div class="panel-head"><div><h3>💰 บัญชีรายรับ-รายจ่าย</h3><p>บันทึกว่าได้รับเงินจากไหน และนำเงินไปใช้อะไร</p></div><button class="btn btn-white" onclick="loadAccounting()">รีเฟรช</button></div>
+    <form id="accountingForm" class="accounting-form">
+      <select name="type" required><option value="รายรับ">รายรับ</option><option value="รายจ่าย">รายจ่าย</option></select><input name="date" type="date" required><input name="category" placeholder="หมวดรายการ" required><input name="source" placeholder="รับจาก / จ่ายให้" required><input name="amount" type="number" min="0.01" step="0.01" placeholder="จำนวนเงิน" required><input name="reference" placeholder="เลขอ้างอิง"><input name="note" placeholder="รายละเอียด"><button class="btn btn-primary" type="submit">บันทึกรายการ</button>
+    </form>
+    <div class="accounting-toolbar"><input id="accountingSearch" placeholder="ค้นหา"><select id="accountingTypeFilter"><option value="">ทั้งหมด</option><option>รายรับ</option><option>รายจ่าย</option></select></div>
+    <div id="accountingList" class="accounting-list"></div>
+  </div>
+</div>
+<div data-admin-panel="reports" class="hidden">
+  <div class="panel admin-module">
+    <div class="panel-head"><div><h3>📊 รายงานสรุปบัญชี</h3><p>สรุปตามช่วงวันที่ แยกรายรับ รายจ่าย และคงเหลือ</p></div></div>
+    <div class="report-filter"><select id="reportPreset"><option value="month">เดือนนี้</option><option value="today">วันนี้</option><option value="year">ปีนี้</option><option value="all">ทั้งหมด</option><option value="custom">กำหนดเอง</option></select><input id="reportFrom" type="date"><input id="reportTo" type="date"><button id="reportRunBtn" class="btn btn-primary" type="button">ประมวลผล</button></div>
+    <div class="report-summary-cards"><div><small>รายรับ</small><b id="reportIncome">0</b><span>บาท</span></div><div><small>รายจ่าย</small><b id="reportExpense">0</b><span>บาท</span></div><div><small>คงเหลือสุทธิ</small><b id="reportNet">0</b><span>บาท</span></div></div>
+    <div id="reportBreakdown" class="report-breakdown"></div>
+  </div>
+</div>
+<div data-admin-panel="settings" class="hidden">
   <div class="panel admin-module">
     <div class="panel-head"><div><h3>⚙️ ตั้งค่าระบบ</h3><p>ค่าพื้นฐานที่ใช้กับระบบสมาชิก</p></div></div>
     <form id="settingsForm" class="settings-grid">
@@ -146,7 +189,7 @@
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.14</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.15</div>
     </footer><div id="toast" class="toast"></div>
 <div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
 <script src="assets/js/app.js"></script>
