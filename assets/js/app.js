@@ -1,9 +1,9 @@
 /*
- SK Alumni Member System V1.0.14 - Hybrid
+ SK Alumni Member System V1.0.15 - Hybrid
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.14',
+  VERSION: '1.0.15',
   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if($('#statusForm')) initStatusCheck();
   if($('#newsList')) loadNews();
   if($('#homeStatTotal')) loadPublicStats();
+  loadPublicHomeContent();
 });
 
 function initRegistration(){
@@ -193,7 +194,7 @@ async function loadNews(){
     renderHomeNews(list);
     const btn=$('#showAllNewsBtn');
     if(btn){
-      btn.onclick=()=>openAllNews(list);
+      btn.onclick=()=>openNewsCenter(list);
       btn.classList.toggle('hidden',list.length===0);
     }
   }catch(e){
@@ -232,8 +233,8 @@ function formatShortDate(v){
   return new Intl.DateTimeFormat('th-TH',{day:'numeric',month:'short',year:'numeric'}).format(d);
 }
 function openNewsDetail(json){
-  let n={}; try{n=JSON.parse(json);}catch(_){}
-  uiAlert(n.title||'ข่าวสาร',`${n.category||'ข่าวสาร'}\n\n${n.content||''}`,'success');
+  let n={};try{n=JSON.parse(json);}catch(_){}
+  openNewsCenter(window.SK_PUBLIC_NEWS||[],n);
 }
 function openAllNews(list){
   const modal=ensureUiModal();
@@ -261,3 +262,32 @@ async function loadPublicStats(){
     $('#homeStatActivities').textContent=Number(s.activitiesThisYear||0).toLocaleString('th-TH');
   }catch(e){console.warn(e)}
 }
+
+
+async function loadPublicHomeContent(){
+  if(!apiReady())return;
+  try{
+    const o=await api('publicHomeContent',{}),c=o.content||{};
+    if($('#homeHeroChip'))$('#homeHeroChip').textContent=c.heroChip||'สมาคมศิษย์เก่า';
+    if($('#homeHeroTitle'))$('#homeHeroTitle').textContent=c.heroTitle||'นูรุ้ลอิสลามสัมพันธ์';
+    if($('#homeHeroSub'))$('#homeHeroSub').innerHTML=escapeHtml(c.heroSub||'نور الإسلام · Nurul Islam　(สุเหร่าเขียว)').replace(/\\n/g,'<br>');
+    if($('#homeHeroQuote'))$('#homeHeroQuote').textContent=c.heroQuote||'⭐ “ศิษย์เก่าคือครอบครัว ❤️ ร่วมกันพัฒนา สานสัมพันธ์ สู่อนาคตที่ดี”';
+    if($('#homeQuoteText'))$('#homeQuoteText').innerHTML=escapeHtml(c.quoteText||'เรามาไกลเพราะการศึกษา\\nเราจะไปได้ไกลกว่า\\nเพราะความร่วมมือของเรา').replace(/\\n/g,'<br>');
+  }catch(e){console.warn(e)}
+}
+function openNewsCenter(list,selected){
+  const frame=$('#newsCenter');if(!frame)return;
+  frame.classList.remove('hidden');frame.scrollIntoView({behavior:'smooth',block:'start'});
+  const rows=list||[],host=$('#newsCenterList');
+  host.innerHTML=rows.length?rows.map((n,i)=>`<button class="news-center-row" type="button" data-news-index="${i}">
+    <div class="news-center-thumb ${newsCategoryClass(n.category)}">${n.imageUrl?`<img src="${escapeHtml(n.imageUrl)}" alt="" loading="lazy">`:newsEmoji(n.category)}</div>
+    <div><div class="news-meta"><span class="${newsCategoryClass(n.category)}">${escapeHtml(n.category||'ข่าวสาร')}</span>${n.publishDate?`<time>${escapeHtml(formatShortDate(n.publishDate))}</time>`:''}</div><b>${escapeHtml(n.title||'')}</b><small>${escapeHtml(String(n.content||'').slice(0,90))}${String(n.content||'').length>90?'…':''}</small></div>
+  </button>`).join(''):'<div class="news-empty">ยังไม่มีข่าวสาร</div>';
+  host.querySelectorAll('.news-center-row').forEach(btn=>btn.onclick=()=>renderNewsCenterDetail(rows[Number(btn.dataset.newsIndex)]));
+  if(selected)renderNewsCenterDetail(selected);else if(rows[0])renderNewsCenterDetail(rows[0]);
+}
+function renderNewsCenterDetail(n){
+  const host=$('#newsCenterDetail');if(!host||!n)return;
+  host.innerHTML=`${n.imageUrl?`<img class="news-detail-image" src="${escapeHtml(n.imageUrl)}" alt="">`:''}<div class="news-detail-meta"><span class="${newsCategoryClass(n.category)}">${escapeHtml(n.category||'ข่าวสาร')}</span>${n.publishDate?`<time>${escapeHtml(formatShortDate(n.publishDate))}</time>`:''}</div><h2>${escapeHtml(n.title||'')}</h2><div class="news-detail-content">${escapeHtml(n.content||'').replace(/\\n/g,'<br>')}</div>`;
+}
+document.addEventListener('DOMContentLoaded',()=>{$('#closeNewsCenterBtn')?.addEventListener('click',()=>$('#newsCenter')?.classList.add('hidden'));});
