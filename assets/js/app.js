@@ -1,9 +1,9 @@
 /*
- SK Alumni Member System V1.0.18 - Hybrid
+ SK Alumni Member System V1.0.19 - Hybrid
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.18',
+  VERSION: '1.0.19',
   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
@@ -295,7 +295,9 @@ function openNewsCenter(list,selected){
 }
 function renderNewsCenterDetail(n){
   const host=$('#newsCenterDetail');if(!host||!n)return;
-  host.innerHTML=`${newsImages(n).length?`<div class="news-detail-gallery">${newsImages(n).map(u=>`<button type="button" onclick="openImageLightbox('${escapeHtml(u)}')"><img src="${escapeHtml(u)}" alt=""></button>`).join('')}</div>`:''}<div class="news-detail-meta"><span class="${newsCategoryClass(n.category)}">${escapeHtml(n.category||'ข่าวสาร')}</span>${n.publishDate?`<time>${escapeHtml(formatShortDate(n.publishDate))}</time>`:''}</div><h2>${escapeHtml(n.title||'')}</h2><div class="news-detail-content">${escapeHtml(n.content||'').replace(/\\n/g,'<br>')}</div>`;
+  const imgs=newsImages(n);
+  host.innerHTML=`${imgs.length?`<div class="news-detail-gallery">${imgs.map((u,i)=>`<button type="button" data-detail-gallery-index="${i}"><img src="${escapeHtml(u)}" alt=""></button>`).join('')}</div>`:''}<div class="news-detail-meta"><span class="${newsCategoryClass(n.category)}">${escapeHtml(n.category||'ข่าวสาร')}</span>${n.publishDate?`<time>${escapeHtml(formatShortDate(n.publishDate))}</time>`:''}</div><h2>${escapeHtml(n.title||'')}</h2><div class="news-detail-content">${escapeHtml(n.content||'').replace(/\\n/g,'<br>')}</div>`;
+  host.querySelectorAll('[data-detail-gallery-index]').forEach(btn=>btn.onclick=()=>openImageLightbox(imgs[Number(btn.dataset.detailGalleryIndex)],imgs,n.title||''));
 }
 document.addEventListener('DOMContentLoaded',()=>{$('#closeNewsCenterBtn')?.addEventListener('click',()=>{$('#newsCenter')?.classList.add('hidden');$('#homeDashboardRow')?.classList.remove('hidden');});});
 
@@ -303,15 +305,39 @@ document.addEventListener('DOMContentLoaded',()=>{$('#closeNewsCenterBtn')?.addE
 function openNewsPopup(n){
   const modal=$('#newsPopupModal'),body=$('#newsPopupBody');if(!modal||!body||!n)return;
   $('#newsPopupTitle').textContent=n.title||'ข่าวสาร';
-  const cat=newsCategoryClass(n.category);
+  const cat=newsCategoryClass(n.category),imgs=newsImages(n);
   body.innerHTML=`<div class="news-popup-meta"><span class="${cat}">${escapeHtml(n.category||'ข่าวสาร')}</span>${n.publishDate?`<time>${escapeHtml(formatShortDate(n.publishDate))}</time>`:''}</div>
-    ${newsImages(n).length?`<div class="news-popup-gallery">${newsImages(n).map(u=>`<button type="button" onclick="openImageLightbox('${escapeHtml(u)}')"><img src="${escapeHtml(u)}" alt="รูปข่าว"></button>`).join('')}</div>`:''}
+    ${imgs.length?`<div class="news-popup-gallery">${imgs.map((u,i)=>`<button type="button" data-gallery-index="${i}"><img src="${escapeHtml(u)}" alt="รูปข่าว ${i+1}"></button>`).join('')}</div>`:''}
     <div class="news-popup-content">${escapeHtml(n.content||'').replace(/\n/g,'<br>')}</div>`;
+  body.querySelectorAll('[data-gallery-index]').forEach(btn=>btn.onclick=()=>openImageLightbox(imgs[Number(btn.dataset.galleryIndex)],imgs,n.title||''));
   modal.classList.remove('hidden');
 }
-function openImageLightbox(url){
-  if(!url)return;const box=$('#imageLightbox'),img=$('#imageLightboxImg');if(!box||!img)return;
-  img.src=url;box.classList.remove('hidden');
+let imageGalleryItems=[],imageGalleryIndex=0,imageGalleryCaption='';
+function openImageLightbox(url,items,caption){
+  const list=(Array.isArray(items)&&items.length?items:[url]).filter(Boolean);
+  if(!list.length)return;
+  imageGalleryItems=list;imageGalleryIndex=Math.max(0,list.indexOf(url));imageGalleryCaption=caption||'';
+  renderImageLightbox();
+  $('#imageLightbox')?.classList.remove('hidden');
+  document.body.classList.add('lightbox-open');
+}
+function renderImageLightbox(){
+  const img=$('#imageLightboxImg'),counter=$('#imageLightboxCounter'),caption=$('#imageLightboxCaption'),prev=$('#imageLightboxPrev'),next=$('#imageLightboxNext');
+  if(!img||!imageGalleryItems.length)return;
+  img.src=imageGalleryItems[imageGalleryIndex];
+  if(counter)counter.textContent=imageGalleryItems.length>1?`${imageGalleryIndex+1} / ${imageGalleryItems.length}`:'';
+  if(caption)caption.textContent=imageGalleryCaption||'';
+  if(prev)prev.disabled=imageGalleryItems.length<=1;
+  if(next)next.disabled=imageGalleryItems.length<=1;
+}
+function moveImageLightbox(step){
+  if(imageGalleryItems.length<=1)return;
+  imageGalleryIndex=(imageGalleryIndex+step+imageGalleryItems.length)%imageGalleryItems.length;
+  renderImageLightbox();
+}
+function closeImageLightbox(){
+  $('#imageLightbox')?.classList.add('hidden');document.body.classList.remove('lightbox-open');
+  const img=$('#imageLightboxImg');if(img)img.removeAttribute('src');
 }
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-open-news-center]').forEach(a=>a.addEventListener('click',e=>{
@@ -324,3 +350,16 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 function newsImages(n){const a=Array.isArray(n?.images)?n.images.filter(Boolean):[];if(!a.length&&n?.imageUrl)a.push(n.imageUrl);return a;}
+
+
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-close-image-lightbox]'))closeImageLightbox();
+  if(e.target.closest('#imageLightboxPrev'))moveImageLightbox(-1);
+  if(e.target.closest('#imageLightboxNext'))moveImageLightbox(1);
+});
+document.addEventListener('keydown',e=>{
+  if($('#imageLightbox')?.classList.contains('hidden'))return;
+  if(e.key==='ArrowLeft')moveImageLightbox(-1);
+  else if(e.key==='ArrowRight')moveImageLightbox(1);
+  else if(e.key==='Escape')closeImageLightbox();
+});
