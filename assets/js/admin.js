@@ -122,7 +122,7 @@ async function editMember(code){
 }
 async function saveMemberEdit(e){e.preventDefault();const f=e.currentTarget,btn=f.querySelector('button[type="submit"]');if(btn.disabled)return;btn.disabled=true;btn.textContent='กำลังบันทึก...';try{const data=Object.fromEntries(new FormData(f).entries());await api('adminUpdateMember',{token:adminToken,...data});$('#memberEditModal').classList.add('hidden');await uiAlert('บันทึกแล้ว','แก้ไขข้อมูลสมาชิกเรียบร้อย');await refreshDashboard()}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error')}finally{btn.disabled=false;btn.textContent='บันทึกข้อมูล'}}
 
-// Admin modules V1.0.15
+// Admin modules V1.0.16
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-admin-tab]').forEach(btn=>btn.addEventListener('click',()=>switchAdminTab(btn.dataset.adminTab)));
   $('#newNewsBtn')?.addEventListener('click',()=>openNewsEditor());
@@ -202,14 +202,37 @@ async function deleteNews(id){
   if(!(await uiConfirm('ลบข่าวสาร','ยืนยันการลบข่าวนี้?')))return;
   try{await api('adminDeleteNews',{token:adminToken,newsId:id});loadAdminNews();}catch(e){uiAlert('ลบไม่สำเร็จ',e.message,'error');}
 }
+let mediaRows=[];
 async function loadMedia(){
   try{
-    const o=await api('adminMediaList',{token:adminToken});
-    $('#mediaAdminList').innerHTML=(o.files||[]).map(f=>`<a class="media-card" href="${escapeHtml(f.url)}" target="_blank">
-      ${f.preview?`<img src="${escapeHtml(f.preview)}" loading="lazy">`:`<div class="media-file-icon">📄</div>`}
-      <b>${escapeHtml(f.name)}</b><small>${escapeHtml(f.folder)} • ${(Number(f.size||0)/1024).toFixed(1)} KB</small>
-    </a>`).join('')||'<div class="empty">ยังไม่มีไฟล์</div>';
+    const o=await api('adminMediaList',{token:adminToken});mediaRows=o.files||[];renderMediaLibrary();
   }catch(e){uiAlert('โหลดไฟล์ไม่สำเร็จ',e.message,'error');}
+}
+function renderMediaLibrary(){
+  const host=$('#mediaAdminList');if(!host)return;
+  const q=String($('#mediaSearch')?.value||'').toLowerCase(),folder=$('#mediaFolderFilter')?.value||'',sort=$('#mediaSort')?.value||'newest';
+  let rows=mediaRows.filter(x=>(!folder||x.folder===folder)&&(!q||String(x.name||'').toLowerCase().includes(q)));
+  rows=rows.sort((a,b)=>(sort==='oldest'?1:-1)*(new Date(a.updated)-new Date(b.updated)));
+  host.innerHTML=rows.length?rows.map((f,i)=>`<article class="media-library-card">
+    <button class="media-library-preview" type="button" onclick="openMediaPreview('${escapeHtml(f.id)}')">
+      ${f.preview?`<img src="${escapeHtml(f.preview)}" loading="lazy">`:`<div class="media-file-icon">📄</div>`}
+    </button>
+    <div class="media-library-info"><b title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</b><small>${escapeHtml(f.folder)} • ${(Number(f.size||0)/1024).toFixed(1)} KB</small></div>
+    <div class="media-library-actions"><button class="btn btn-view" onclick="openMediaPreview('${escapeHtml(f.id)}')">ดู</button><a class="btn btn-soft" href="${escapeHtml(f.url)}" target="_blank">Drive</a></div>
+  </article>`).join(''):'<div class="empty">ไม่พบไฟล์</div>';
+}
+function openMediaPreview(id){
+  const f=mediaRows.find(x=>String(x.id)===String(id));if(!f)return;
+  $('#mediaPreviewTitle').textContent=f.name||'ไฟล์ภาพ';
+  $('#mediaPreviewBody').innerHTML=`${f.preview?`<img class="media-preview-large" src="${escapeHtml(f.preview)}" alt="">`:'<div class="media-file-icon large">📄</div>'}
+    <div class="media-preview-meta"><div><small>หมวด</small><b>${escapeHtml(f.folder||'-')}</b></div><div><small>ขนาด</small><b>${(Number(f.size||0)/1024).toFixed(1)} KB</b></div><div><small>อัปเดต</small><b>${escapeHtml(formatDate(f.updated))}</b></div></div>
+    <div class="member-detail-actions"><a class="btn btn-primary" href="${escapeHtml(f.url)}" target="_blank">เปิดใน Google Drive</a>${f.preview?`<button class="btn btn-soft" onclick="copyMediaUrl('${escapeHtml(f.preview)}')">คัดลอก URL รูป</button>`:''}</div>`;
+  $('#mediaPreviewModal').classList.remove('hidden');
+}
+async function copyMediaUrl(url){try{await navigator.clipboard.writeText(url);toast('คัดลอก URL แล้ว','success');}catch(e){uiAlert('คัดลอกไม่สำเร็จ',url,'warning');}}
+async function uploadWebsiteMedia(file){
+  if(!file)return;if(file.size>5*1024*1024){uiAlert('ไฟล์ใหญ่เกินไป','กรุณาใช้ไฟล์ไม่เกิน 5 MB','warning');return;}
+  try{setLoading(true);await api('adminMediaUpload',{token:adminToken,fileName:file.name,dataUrl:await fileToDataUrl(file)});await uiAlert('อัปโหลดแล้ว','เพิ่มภาพเข้าคลัง WebsiteMedia เรียบร้อย','success');loadMedia();}catch(e){uiAlert('อัปโหลดไม่สำเร็จ',e.message,'error');}finally{setLoading(false);}
 }
 async function loadSettings(){
   try{
@@ -232,30 +255,49 @@ async function deleteAdminTopic(type,id){if(!(await uiConfirm('ลบหัว�
 async function loadFinanceSummary(){try{const o=await api('adminFinanceSummary',{token:adminToken}),s=o.summary||{};if($('#sumPaymentCount'))$('#sumPaymentCount').textContent=Number(s.paymentCount||0).toLocaleString('th-TH');if($('#sumPaymentAmount'))$('#sumPaymentAmount').textContent=Number(s.paymentAmount||0).toLocaleString('th-TH')+' บาท';if($('#sumDonationCount'))$('#sumDonationCount').textContent=Number(s.donationCount||0).toLocaleString('th-TH');if($('#sumDonationAmount'))$('#sumDonationAmount').textContent=Number(s.donationAmount||0).toLocaleString('th-TH')+' บาท';}catch(e){console.warn(e)}}
 document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{if(typeof adminToken!=='undefined'&&adminToken)loadFinanceSummary();},800);});
 
+let adminTransactionCache={payment:[],donation:[]};
 async function loadAdminTransactions(type){
   const host=type==='payment'?$('#adminPaymentList'):$('#adminDonationList');
   if(!host)return;
-  host.innerHTML='<div class="empty">กำลังโหลด...</div>';
+  host.innerHTML='<tr><td colspan="7" class="empty">กำลังโหลด...</td></tr>';
   try{
-    const o=await api('adminTransactionsList',{token:adminToken,type});
-    const rows=o.rows||[];
-    host.innerHTML=rows.length?rows.map(x=>`<article class="transaction-card">
-      <div class="transaction-main">
-        <div class="transaction-title"><b>${escapeHtml(x.id)}</b><span class="status-badge ${statusClass(x.status)}">${escapeHtml(x.status)}</span></div>
-        <div class="transaction-grid">
-          <div><small>${type==='payment'?'สมาชิก':'ผู้บริจาค'}</small><strong>${escapeHtml(x.memberCode||x.donorName||'-')}</strong></div>
-          <div><small>หัวข้อ</small><strong>${escapeHtml(x.topic||'-')}</strong></div>
-          <div><small>จำนวนเงิน</small><strong>${Number(x.amount||0).toLocaleString('th-TH')} บาท</strong></div>
-          <div><small>วันเวลาโอน</small><strong>${escapeHtml(formatDate(x.date))}</strong></div>
-        </div>
-      </div>
-      <div class="transaction-actions">
-        ${x.slipUrl?`<a class="btn btn-view" href="${escapeHtml(x.slipUrl)}" target="_blank">ดูสลิป</a>`:''}
-        <button class="btn btn-soft" onclick="verifyTransaction('${type}','${escapeHtml(x.id)}','อนุมัติ')">✓ อนุมัติ</button>
-        <button class="btn btn-danger" onclick="verifyTransaction('${type}','${escapeHtml(x.id)}','ไม่อนุมัติ')">ไม่อนุมัติ</button>
-      </div>
-    </article>`).join(''):'<div class="empty">ยังไม่มีรายการ</div>';
-  }catch(e){host.innerHTML='<div class="empty">โหลดไม่สำเร็จ</div>';uiAlert('โหลดรายการไม่สำเร็จ',e.message,'error');}
+    const o=await api('adminTransactionsList',{token:adminToken,type}),rows=o.rows||[];
+    adminTransactionCache[type]=rows;
+    host.innerHTML=rows.length?rows.map(x=>`<tr>
+      <td><b>${escapeHtml(x.id)}</b></td>
+      <td>${escapeHtml(type==='payment'?(x.memberName||x.memberCode||'-'):(x.donorName||x.memberCode||'-'))}</td>
+      <td>${escapeHtml(x.topic||'-')}</td>
+      <td class="money-cell">${Number(x.amount||0).toLocaleString('th-TH')} บาท</td>
+      <td>${escapeHtml(formatDate(x.date))}</td>
+      <td><span class="status-badge ${statusClass(x.status)}">${escapeHtml(x.status||'-')}</span></td>
+      <td><button class="btn btn-view" onclick="openTransactionDetail('${type}','${escapeHtml(x.id)}')">ดู</button></td>
+    </tr>`).join(''):'<tr><td colspan="7" class="empty">ยังไม่มีรายการ</td></tr>';
+  }catch(e){host.innerHTML='<tr><td colspan="7" class="empty">โหลดไม่สำเร็จ</td></tr>';uiAlert('โหลดรายการไม่สำเร็จ',e.message,'error');}
+}
+function openTransactionDetail(type,id){
+  const x=(adminTransactionCache[type]||[]).find(r=>String(r.id)===String(id));if(!x)return;
+  $('#transactionDetailTitle').textContent=type==='payment'?'รายละเอียดการชำระค่าสมาชิก':'รายละเอียดการบริจาค';
+  const who=type==='payment'?(x.memberName||x.memberCode||'-'):(x.donorName||x.memberCode||'-');
+  $('#transactionDetailBody').innerHTML=`<div class="transaction-detail-summary">
+    <div class="transaction-detail-id"><b>${escapeHtml(x.id)}</b><span class="status-badge ${statusClass(x.status)}">${escapeHtml(x.status||'-')}</span></div>
+    <div class="transaction-detail-grid">
+      <div><small>${type==='payment'?'สมาชิก':'ผู้บริจาค'}</small><b>${escapeHtml(who)}</b></div>
+      ${x.memberCode?`<div><small>รหัสสมาชิก</small><b>${escapeHtml(x.memberCode)}</b></div>`:''}
+      ${x.phone?`<div><small>เบอร์โทร</small><b>${escapeHtml(x.phone)}</b></div>`:''}
+      ${x.email?`<div><small>อีเมล</small><b>${escapeHtml(x.email)}</b></div>`:''}
+      <div><small>หัวข้อ</small><b>${escapeHtml(x.topic||'-')}</b></div>
+      <div><small>จำนวนเงิน</small><b>${Number(x.amount||0).toLocaleString('th-TH')} บาท</b></div>
+      <div><small>วันเวลาโอน</small><b>${escapeHtml(formatDate(x.date))}</b></div>
+      <div><small>ตรวจโดย</small><b>${escapeHtml(x.verifiedBy||'-')}</b></div>
+    </div>
+    ${x.note?`<div class="transaction-note"><small>หมายเหตุ</small><p>${escapeHtml(x.note)}</p></div>`:''}
+    ${x.slipUrl?`<button class="transaction-slip-preview" type="button" onclick="window.open('${escapeHtml(x.slipUrl)}','_blank')"><img src="${escapeHtml(x.slipUrl)}" alt="สลิป"><span>คลิกเพื่อเปิดสลิปขนาดเต็ม</span></button>`:''}
+    <div class="transaction-detail-actions">
+      <button class="btn btn-soft" onclick="verifyTransaction('${type}','${escapeHtml(x.id)}','อนุมัติ')">✓ อนุมัติ</button>
+      <button class="btn btn-danger" onclick="verifyTransaction('${type}','${escapeHtml(x.id)}','ไม่อนุมัติ')">ไม่อนุมัติ</button>
+    </div>
+  </div>`;
+  $('#transactionDetailModal').classList.remove('hidden');
 }
 async function verifyTransaction(type,id,decision){
   if(!(await uiConfirm(decision==='อนุมัติ'?'ยืนยันรายการ':'ไม่อนุมัติรายการ',`${decision} ${id} ?`)))return;
@@ -264,6 +306,7 @@ async function verifyTransaction(type,id,decision){
     const o=await api('adminVerifyTransaction',{token:adminToken,type,id,decision});
     await uiAlert('บันทึกแล้ว',o.message||'อัปเดตสถานะเรียบร้อย','success');
     await loadAdminTransactions(type);
+    $('#transactionDetailModal')?.classList.add('hidden');
     await loadFinanceSummary();
     if(type==='payment') await refreshDashboard();
   }catch(e){uiAlert('บันทึกไม่สำเร็จ',e.message,'error');}
@@ -278,12 +321,66 @@ function initWebManager(){
 async function loadHomeContentAdmin(){try{const o=await api('adminHomeContentGet',{token:adminToken}),c=o.content||{},f=$('#homeContentForm');if(!f)return;['heroChip','heroTitle','heroSub','heroQuote','quoteText'].forEach(k=>{if(f.elements[k])f.elements[k].value=c[k]||'';});}catch(e){uiAlert('โหลดข้อความหน้าเว็บไม่สำเร็จ',e.message,'error');}}
 document.addEventListener('DOMContentLoaded',()=>{
  $('#homeContentForm')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget,p={token:adminToken};['heroChip','heroTitle','heroSub','heroQuote','quoteText'].forEach(k=>p[k]=f.elements[k].value);try{await api('adminHomeContentSave',p);await uiAlert('บันทึกแล้ว','อัปเดตข้อความหน้าเว็บเรียบร้อย','success');}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error');}});
- $('#accountingForm')?.addEventListener('submit',saveAccountingEntry);$('#accountingSearch')?.addEventListener('input',renderAccountingRows);$('#accountingTypeFilter')?.addEventListener('change',renderAccountingRows);$('#reportRunBtn')?.addEventListener('click',loadAccountingReport);$('#reportPreset')?.addEventListener('change',()=>{applyReportPreset();loadAccountingReport();});
+ $('#accountingForm')?.addEventListener('submit',saveAccountingEntry);$('#accountingSearch')?.addEventListener('input',()=>{accountingPage=1;renderAccountingRows();});$('#accountingTypeFilter')?.addEventListener('change',()=>{accountingPage=1;renderAccountingRows();});$('#accountingSort')?.addEventListener('change',()=>{accountingPage=1;renderAccountingRows();});$('#accountingPageSize')?.addEventListener('change',()=>{accountingPage=1;renderAccountingRows();});$('#reportRunBtn')?.addEventListener('click',loadAccountingReport);$('#reportPreset')?.addEventListener('change',()=>{applyReportPreset();loadAccountingReport();});$('#reportCsvBtn')?.addEventListener('click',exportAccountingCsv);$('#mediaSearch')?.addEventListener('input',renderMediaLibrary);$('#mediaFolderFilter')?.addEventListener('change',renderMediaLibrary);$('#mediaSort')?.addEventListener('change',renderMediaLibrary);$('#mediaUploadInput')?.addEventListener('change',e=>{const f=e.target.files?.[0];if(f)uploadWebsiteMedia(f);e.target.value='';});
 });
-let accountingRows=[];
-async function saveAccountingEntry(e){e.preventDefault();const f=e.currentTarget;try{const p={token:adminToken};['type','date','category','source','amount','reference','note'].forEach(k=>p[k]=f.elements[k].value);await api('adminAccountingSave',p);f.reset();await uiAlert('บันทึกแล้ว','เพิ่มรายการบัญชีเรียบร้อย','success');loadAccounting();}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error');}}
-async function loadAccounting(){try{const o=await api('adminAccountingList',{token:adminToken});accountingRows=o.rows||[];renderAccountingRows();const f=$('#accountingForm');if(f&&f.elements.date&&!f.elements.date.value)f.elements.date.value=new Date().toISOString().slice(0,10);}catch(e){uiAlert('โหลดบัญชีไม่สำเร็จ',e.message,'error');}}
-function renderAccountingRows(){const host=$('#accountingList');if(!host)return;const q=String($('#accountingSearch')?.value||'').toLowerCase(),type=$('#accountingTypeFilter')?.value||'';const rows=accountingRows.filter(x=>(!type||x.type===type)&&(!q||[x.category,x.source,x.reference,x.note].join(' ').toLowerCase().includes(q)));host.innerHTML=rows.length?rows.map(x=>`<div class="account-row ${x.type==='รายรับ'?'income':'expense'}"><div><b>${escapeHtml(x.type)}</b><small>${escapeHtml(x.date||'')}</small></div><div><b>${escapeHtml(x.category||'-')}</b><small>${escapeHtml(x.source||'-')}</small></div><div><b>${Number(x.amount||0).toLocaleString('th-TH')} บาท</b><small>${escapeHtml(x.reference||'')}</small></div><div><small>${escapeHtml(x.note||'')}</small></div><button class="btn btn-danger" onclick="deleteAccountingEntry('${escapeHtml(x.id)}')">ลบ</button></div>`).join(''):'<div class="empty">ยังไม่มีรายการบัญชี</div>';}
+let accountingRows=[],accountingPage=1,currentReportRows=[];
+async function saveAccountingEntry(e){
+  e.preventDefault();const f=e.currentTarget;
+  try{
+    const p={token:adminToken};['type','date','category','source','amount','reference','note'].forEach(k=>p[k]=f.elements[k].value);
+    await api('adminAccountingSave',p);f.reset();await uiAlert('บันทึกแล้ว','เพิ่มรายการบัญชีเรียบร้อย','success');loadAccounting();
+  }catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error');}
+}
+async function loadAccounting(){
+  try{
+    const o=await api('adminAccountingList',{token:adminToken});accountingRows=o.rows||[];accountingPage=1;renderAccountingRows();
+    const f=$('#accountingForm');if(f&&f.elements.date&&!f.elements.date.value)f.elements.date.value=new Date().toISOString().slice(0,10);
+  }catch(e){uiAlert('โหลดบัญชีไม่สำเร็จ',e.message,'error');}
+}
+function getFilteredAccounting(){
+  const q=String($('#accountingSearch')?.value||'').toLowerCase(),type=$('#accountingTypeFilter')?.value||'',sort=$('#accountingSort')?.value||'newest';
+  let rows=accountingRows.filter(x=>(!type||x.type===type)&&(!q||[x.category,x.source,x.reference,x.note].join(' ').toLowerCase().includes(q)));
+  const chrono=[...rows].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  let balance=0;const balances={};
+  chrono.forEach(x=>{balance+=(x.type==='รายรับ'?Number(x.amount||0):-Number(x.amount||0));balances[x.id]=balance;});
+  rows.sort((a,b)=>(sort==='oldest'?1:-1)*(new Date(a.date)-new Date(b.date)));
+  return rows.map(x=>({...x,balance:balances[x.id]||0}));
+}
+function renderAccountingRows(){
+  const body=$('#accountingTbody'),pager=$('#accountingPagerTop');if(!body)return;
+  const rows=getFilteredAccounting(),sizeVal=$('#accountingPageSize')?.value||'10',size=sizeVal==='all'?rows.length||1:Number(sizeVal),pages=Math.max(1,Math.ceil(rows.length/size));
+  accountingPage=Math.min(Math.max(1,accountingPage),pages);const pageRows=sizeVal==='all'?rows:rows.slice((accountingPage-1)*size,accountingPage*size);
+  body.innerHTML=pageRows.length?pageRows.map(x=>`<tr>
+    <td>${escapeHtml(x.date||'-')}</td>
+    <td><b>${escapeHtml(x.category||'-')}</b><small class="ledger-sub">${escapeHtml(x.source||'')}${x.note?' · '+escapeHtml(x.note):''}</small></td>
+    <td class="ledger-income">${x.type==='รายรับ'?Number(x.amount||0).toLocaleString('th-TH',{minimumFractionDigits:2}):''}</td>
+    <td class="ledger-expense">${x.type==='รายจ่าย'?Number(x.amount||0).toLocaleString('th-TH',{minimumFractionDigits:2}):''}</td>
+    <td class="ledger-balance">${Number(x.balance||0).toLocaleString('th-TH',{minimumFractionDigits:2})}</td>
+    <td><button class="btn btn-danger" onclick="deleteAccountingEntry('${escapeHtml(x.id)}')">ลบ</button></td>
+  </tr>`).join(''):'<tr><td colspan="6" class="empty">ยังไม่มีรายการบัญชี</td></tr>';
+  if(pager)pager.innerHTML=`<span>แสดง ${rows.length?((accountingPage-1)*size+1):0}-${Math.min(accountingPage*size,rows.length)} จาก ${rows.length} รายการ</span><div><button class="pager-btn" ${accountingPage<=1?'disabled':''} onclick="changeAccountingPage(-1)">‹</button><b>หน้า ${accountingPage} / ${pages}</b><button class="pager-btn" ${accountingPage>=pages?'disabled':''} onclick="changeAccountingPage(1)">›</button></div>`;
+}
+function changeAccountingPage(step){accountingPage+=step;renderAccountingRows();}
 async function deleteAccountingEntry(id){if(!(await uiConfirm('ลบรายการบัญชี','ยืนยันการลบรายการนี้?')))return;try{await api('adminAccountingDelete',{token:adminToken,id});loadAccounting();}catch(e){uiAlert('ลบไม่สำเร็จ',e.message,'error');}}
 function applyReportPreset(){const preset=$('#reportPreset')?.value||'custom',from=$('#reportFrom'),to=$('#reportTo');if(!from||!to||preset==='custom')return;const d=new Date(),fmt=x=>{const y=x.getFullYear(),m=String(x.getMonth()+1).padStart(2,'0'),day=String(x.getDate()).padStart(2,'0');return `${y}-${m}-${day}`};if(preset==='all'){from.value='';to.value='';return;}if(preset==='today'){from.value=to.value=fmt(d);return;}if(preset==='month'){from.value=fmt(new Date(d.getFullYear(),d.getMonth(),1));to.value=fmt(new Date(d.getFullYear(),d.getMonth()+1,0));return;}if(preset==='year'){from.value=fmt(new Date(d.getFullYear(),0,1));to.value=fmt(new Date(d.getFullYear(),11,31));}}
-async function loadAccountingReport(){try{applyReportPreset();const o=await api('adminAccountingReport',{token:adminToken,from:$('#reportFrom')?.value||'',to:$('#reportTo')?.value||''}),r=o.report||{};if($('#reportIncome'))$('#reportIncome').textContent=Number(r.income||0).toLocaleString('th-TH');if($('#reportExpense'))$('#reportExpense').textContent=Number(r.expense||0).toLocaleString('th-TH');if($('#reportNet'))$('#reportNet').textContent=Number(r.net||0).toLocaleString('th-TH');const host=$('#reportBreakdown');if(host)host.innerHTML=(r.byCategory||[]).map(x=>`<div class="report-row"><span>${escapeHtml(x.type)} · ${escapeHtml(x.category)}</span><b>${Number(x.amount||0).toLocaleString('th-TH')} บาท</b></div>`).join('')||'<div class="empty">ยังไม่มีข้อมูลในช่วงนี้</div>';}catch(e){uiAlert('ประมวลผลรายงานไม่สำเร็จ',e.message,'error');}}
+async function loadAccountingReport(){
+  try{
+    applyReportPreset();const o=await api('adminAccountingReport',{token:adminToken,from:$('#reportFrom')?.value||'',to:$('#reportTo')?.value||''}),r=o.report||{};currentReportRows=r.rows||[];
+    if($('#reportIncome'))$('#reportIncome').textContent=Number(r.income||0).toLocaleString('th-TH');
+    if($('#reportExpense'))$('#reportExpense').textContent=Number(r.expense||0).toLocaleString('th-TH');
+    if($('#reportNet'))$('#reportNet').textContent=Number(r.net||0).toLocaleString('th-TH');
+    const host=$('#reportBreakdown');if(host)host.innerHTML=(r.byCategory||[]).map(x=>`<div class="report-row"><span>${escapeHtml(x.type)} · ${escapeHtml(x.category)}</span><b>${Number(x.amount||0).toLocaleString('th-TH')} บาท</b></div>`).join('')||'<div class="empty">ยังไม่มีข้อมูลในช่วงนี้</div>';
+  }catch(e){uiAlert('ประมวลผลรายงานไม่สำเร็จ',e.message,'error');}
+}
+function exportAccountingCsv(){
+  if(!currentReportRows.length){uiAlert('ยังไม่มีข้อมูล','กรุณากดประมวลผลรายงานก่อน','warning');return;}
+  const rows=[['วันที่','ประเภท','รายการ','รับจาก/จ่ายให้','จำนวนเงิน','เลขอ้างอิง','หมายเหตุ'],...currentReportRows.map(x=>[x.date,x.type,x.category,x.source,x.amount,x.reference||'',x.note||''])];
+  const esc=v=>`"${String(v??'').replace(/"/g,'""')}"`,csv='\ufeff'+rows.map(r=>r.map(esc).join(',')).join('\r\n'),blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=`SK-Alumni-Accounting-${$('#reportFrom')?.value||'all'}-${$('#reportTo')?.value||'all'}.csv`;a.click();URL.revokeObjectURL(url);
+}
+
+
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-close-transaction-detail]'))$('#transactionDetailModal')?.classList.add('hidden');
+  if(e.target.closest('[data-close-media-preview]'))$('#mediaPreviewModal')?.classList.add('hidden');
+});
