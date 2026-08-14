@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin | SK Alumni Member System V1.0.15</title>
+  <title>Admin | SK Alumni Member System V1.0.16</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="admin-page">
 <header class="topbar compact">
-  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.15</span></p></div></div>
+  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.16</span></p></div></div>
   <nav class="nav-actions"><a href="index.html" class="btn btn-ghost">หน้าเว็บหลัก</a><button id="logoutBtn" class="btn btn-soft hidden">ออกจากระบบ</button></nav>
 </header>
 
@@ -76,14 +76,18 @@
 
 <div data-admin-panel="payments" class="hidden">
   <div class="panel admin-module">
-    <div class="panel-head"><div><h3>💳 ตรวจสอบการชำระค่าสมาชิก</h3><p>ตรวจสลิปและยืนยันรายการชำระของสมาชิก</p></div><button class="btn btn-white" onclick="loadAdminTransactions('payment')">รีเฟรช</button></div>
-    <div id="adminPaymentList" class="transaction-list"></div>
+    <div class="panel-head"><div><h3>💳 ตรวจสอบการชำระค่าสมาชิก</h3><p>รายการชำระเงินในรูปแบบตาราง คลิก “ดู” เพื่อเปิดรายละเอียด</p></div><button class="btn btn-white" onclick="loadAdminTransactions('payment')">รีเฟรช</button></div>
+    <div class="table-wrap transaction-table-wrap">
+      <table class="transaction-table"><thead><tr><th>เลขที่</th><th>สมาชิก</th><th>หัวข้อ</th><th>จำนวน</th><th>วันเวลาโอน</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody id="adminPaymentList"></tbody></table>
+    </div>
   </div>
 </div>
 <div data-admin-panel="donations" class="hidden">
   <div class="panel admin-module">
-    <div class="panel-head"><div><h3>💚 ตรวจสอบการบริจาค</h3><p>ตรวจหลักฐานและยืนยันรายการบริจาค</p></div><button class="btn btn-white" onclick="loadAdminTransactions('donation')">รีเฟรช</button></div>
-    <div id="adminDonationList" class="transaction-list"></div>
+    <div class="panel-head"><div><h3>💚 ตรวจสอบการบริจาค</h3><p>แสดงรายการบริจาคเป็นตาราง คลิก “ดู” เพื่อดูหลักฐานและรายละเอียด</p></div><button class="btn btn-white" onclick="loadAdminTransactions('donation')">รีเฟรช</button></div>
+    <div class="table-wrap transaction-table-wrap">
+      <table class="transaction-table"><thead><tr><th>เลขที่</th><th>ผู้บริจาค</th><th>หัวข้อ</th><th>จำนวน</th><th>วันเวลาโอน</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody id="adminDonationList"></tbody></table>
+    </div>
   </div>
 </div>
 <div id="legacyNewsPanel" data-admin-panel="news" class="hidden">
@@ -94,8 +98,14 @@
 </div>
 <div id="legacyMediaPanel" data-admin-panel="media" class="hidden">
   <div class="panel admin-module">
-    <div class="panel-head"><div><h3>🖼️ จัดการไฟล์ภาพ</h3><p>ดูไฟล์ที่ระบบเก็บไว้ใน Google Drive (Phase 1)</p></div><button id="refreshMediaBtn" class="btn btn-white">รีเฟรช</button></div>
-    <div id="mediaAdminList" class="media-grid"></div>
+    <div class="panel-head"><div><h3>🖼️ คลังไฟล์ภาพในระบบ</h3><p>ค้นหา กรอง ดูตัวอย่าง และเปิดไฟล์จาก Google Drive ได้ในที่เดียว</p></div><button id="refreshMediaBtn" class="btn btn-white">รีเฟรช</button></div>
+    <div class="media-manager-toolbar">
+      <input id="mediaSearch" placeholder="ค้นหาชื่อไฟล์">
+      <select id="mediaFolderFilter"><option value="">ทุกหมวด</option><option>MemberPhotos</option><option>PaymentSlips</option><option>DonationSlips</option><option>NewsImages</option><option>MemberDocuments</option><option>WebsiteMedia</option></select>
+      <select id="mediaSort"><option value="newest">ใหม่ → เก่า</option><option value="oldest">เก่า → ใหม่</option></select>
+      <label class="btn btn-soft media-upload-btn">+ อัปโหลดภาพเว็บไซต์<input id="mediaUploadInput" type="file" accept="image/*" hidden></label>
+    </div>
+    <div id="mediaAdminList" class="media-library-grid"></div>
   </div>
 </div>
 <div id="legacyTopicsPanel" data-admin-panel="topics" class="hidden"><div class="panel admin-module"><div class="panel-head"><div><h3>จัดการหัวข้อรายการ</h3><p>ชำระค่าสมาชิกและการบริจาค</p></div></div><div class="topic-admin-grid">
@@ -127,18 +137,34 @@
 </div>
 <div data-admin-panel="accounting" class="hidden">
   <div class="panel admin-module">
-    <div class="panel-head"><div><h3>💰 บัญชีรายรับ-รายจ่าย</h3><p>บันทึกว่าได้รับเงินจากไหน และนำเงินไปใช้อะไร</p></div><button class="btn btn-white" onclick="loadAccounting()">รีเฟรช</button></div>
-    <form id="accountingForm" class="accounting-form">
-      <select name="type" required><option value="รายรับ">รายรับ</option><option value="รายจ่าย">รายจ่าย</option></select><input name="date" type="date" required><input name="category" placeholder="หมวดรายการ" required><input name="source" placeholder="รับจาก / จ่ายให้" required><input name="amount" type="number" min="0.01" step="0.01" placeholder="จำนวนเงิน" required><input name="reference" placeholder="เลขอ้างอิง"><input name="note" placeholder="รายละเอียด"><button class="btn btn-primary" type="submit">บันทึกรายการ</button>
+    <div class="panel-head"><div><h3>💰 บัญชีรายรับ-รายจ่าย</h3><p>บันทึกรายการแบบสมุดบัญชีจริง ดูรายรับ รายจ่าย และยอดคงเหลือต่อเนื่อง</p></div><button class="btn btn-white" onclick="loadAccounting()">รีเฟรช</button></div>
+    <form id="accountingForm" class="accounting-entry-form">
+      <label>วันที่<input name="date" type="date" required></label>
+      <label>ประเภท<select name="type" required><option value="รายรับ">รายรับ</option><option value="รายจ่าย">รายจ่าย</option></select></label>
+      <label class="wide">รายการ / รายละเอียด<input name="category" placeholder="เช่น ค่าสมาชิก / ค่าอาหารกิจกรรม" required></label>
+      <label>รับจาก / จ่ายให้<input name="source" required></label>
+      <label>จำนวนเงิน<input name="amount" type="number" min="0.01" step="0.01" required></label>
+      <label>เลขอ้างอิง<input name="reference"></label>
+      <label class="wide">หมายเหตุ<input name="note"></label>
+      <button class="btn btn-primary" type="submit">บันทึกรายการ</button>
     </form>
-    <div class="accounting-toolbar"><input id="accountingSearch" placeholder="ค้นหา"><select id="accountingTypeFilter"><option value="">ทั้งหมด</option><option>รายรับ</option><option>รายจ่าย</option></select></div>
-    <div id="accountingList" class="accounting-list"></div>
+
+    <div class="accounting-toolbar accounting-toolbar-v116">
+      <input id="accountingSearch" placeholder="ค้นหารายการ / รับจาก / จ่ายให้ / อ้างอิง">
+      <select id="accountingTypeFilter"><option value="">รายรับ + รายจ่าย</option><option>รายรับ</option><option>รายจ่าย</option></select>
+      <select id="accountingSort"><option value="newest">ใหม่ → เก่า</option><option value="oldest">เก่า → ใหม่</option></select>
+      <select id="accountingPageSize"><option>10</option><option>20</option><option>50</option><option>100</option><option value="all">All</option></select>
+    </div>
+    <div id="accountingPagerTop" class="member-pager"></div>
+    <div class="table-wrap">
+      <table class="ledger-table"><thead><tr><th>วันที่</th><th>รายการ</th><th>รายรับ</th><th>รายจ่าย</th><th>คงเหลือ</th><th>จัดการ</th></tr></thead><tbody id="accountingTbody"></tbody></table>
+    </div>
   </div>
 </div>
 <div data-admin-panel="reports" class="hidden">
   <div class="panel admin-module">
     <div class="panel-head"><div><h3>📊 รายงานสรุปบัญชี</h3><p>สรุปตามช่วงวันที่ แยกรายรับ รายจ่าย และคงเหลือ</p></div></div>
-    <div class="report-filter"><select id="reportPreset"><option value="month">เดือนนี้</option><option value="today">วันนี้</option><option value="year">ปีนี้</option><option value="all">ทั้งหมด</option><option value="custom">กำหนดเอง</option></select><input id="reportFrom" type="date"><input id="reportTo" type="date"><button id="reportRunBtn" class="btn btn-primary" type="button">ประมวลผล</button></div>
+    <div class="report-filter"><select id="reportPreset"><option value="month">เดือนนี้</option><option value="today">วันนี้</option><option value="year">ปีนี้</option><option value="all">ทั้งหมด</option><option value="custom">กำหนดเอง</option></select><input id="reportFrom" type="date"><input id="reportTo" type="date"><button id="reportRunBtn" class="btn btn-primary" type="button">ประมวลผล</button><button id="reportCsvBtn" class="btn btn-soft" type="button">⬇ CSV</button></div>
     <div class="report-summary-cards"><div><small>รายรับ</small><b id="reportIncome">0</b><span>บาท</span></div><div><small>รายจ่าย</small><b id="reportExpense">0</b><span>บาท</span></div><div><small>คงเหลือสุทธิ</small><b id="reportNet">0</b><span>บาท</span></div></div>
     <div id="reportBreakdown" class="report-breakdown"></div>
   </div>
@@ -182,6 +208,23 @@
     </form>
   </div>
 </div>
+
+<div id="transactionDetailModal" class="member-detail-modal hidden">
+  <div class="member-detail-backdrop" data-close-transaction-detail></div>
+  <div class="member-detail-card transaction-detail-card">
+    <div class="member-detail-head"><div><span class="eyebrow">TRANSACTION DETAIL</span><h2 id="transactionDetailTitle">รายละเอียดรายการ</h2></div><button class="detail-close" data-close-transaction-detail>×</button></div>
+    <div id="transactionDetailBody"></div>
+  </div>
+</div>
+
+<div id="mediaPreviewModal" class="member-detail-modal hidden">
+  <div class="member-detail-backdrop" data-close-media-preview></div>
+  <div class="member-detail-card media-preview-card">
+    <div class="member-detail-head"><div><span class="eyebrow">MEDIA LIBRARY</span><h2 id="mediaPreviewTitle">ไฟล์ภาพ</h2></div><button class="detail-close" data-close-media-preview>×</button></div>
+    <div id="mediaPreviewBody"></div>
+  </div>
+</div>
+
 <footer class="v105-footer">
       <div class="footer-logo-wrap"><img src="assets/img/association-logo.jpg" alt="โลโก้สมาคม"></div>
       <div class="footer-copy">
@@ -189,7 +232,7 @@
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.15</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.16</div>
     </footer><div id="toast" class="toast"></div>
 <div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
 <script src="assets/js/app.js"></script>
