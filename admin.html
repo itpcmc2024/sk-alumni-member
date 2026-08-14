@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin | SK Alumni Member System V1.0.13</title>
+  <title>Admin | SK Alumni Member System V1.0.14</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="admin-page">
 <header class="topbar compact">
-  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.13</span></p></div></div>
+  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.14</span></p></div></div>
   <nav class="nav-actions"><a href="index.html" class="btn btn-ghost">หน้าเว็บหลัก</a><button id="logoutBtn" class="btn btn-soft hidden">ออกจากระบบ</button></nav>
 </header>
 
@@ -27,6 +27,8 @@
 <section id="dashboardPanel" class="hidden">
   <div id="financeSummaryCards" class="finance-summary-cards"><div><small>แจ้งชำระทั้งหมด</small><b id="sumPaymentCount">—</b><span id="sumPaymentAmount">— บาท</span></div><div><small>บริจาคทั้งหมด</small><b id="sumDonationCount">—</b><span id="sumDonationAmount">— บาท</span></div></div><div class="admin-tabs">
     <button class="admin-tab active" data-admin-tab="members">👥 สมาชิก</button>
+    <button class="admin-tab" data-admin-tab="payments">💳 ชำระเงิน</button>
+    <button class="admin-tab" data-admin-tab="donations">💚 บริจาค</button>
     <button class="admin-tab" data-admin-tab="news">📣 ข่าวสาร</button>
     <button class="admin-tab" data-admin-tab="media">🖼️ ไฟล์ภาพ</button>
     <button class="admin-tab" data-admin-tab="topics">หัวข้อรายการ</button><button class="admin-tab" data-admin-tab="settings">⚙️ ตั้งค่าระบบ</button>
@@ -68,6 +70,19 @@
       </table>
     </div>
     <div id="emptyMembers" class="empty hidden">ไม่พบข้อมูลสมาชิก</div>
+  </div>
+</div>
+
+<div data-admin-panel="payments" class="hidden">
+  <div class="panel admin-module">
+    <div class="panel-head"><div><h3>💳 ตรวจสอบการชำระค่าสมาชิก</h3><p>ตรวจสลิปและยืนยันรายการชำระของสมาชิก</p></div><button class="btn btn-white" onclick="loadAdminTransactions('payment')">รีเฟรช</button></div>
+    <div id="adminPaymentList" class="transaction-list"></div>
+  </div>
+</div>
+<div data-admin-panel="donations" class="hidden">
+  <div class="panel admin-module">
+    <div class="panel-head"><div><h3>💚 ตรวจสอบการบริจาค</h3><p>ตรวจหลักฐานและยืนยันรายการบริจาค</p></div><button class="btn btn-white" onclick="loadAdminTransactions('donation')">รีเฟรช</button></div>
+    <div id="adminDonationList" class="transaction-list"></div>
   </div>
 </div>
 <div data-admin-panel="news" class="hidden">
@@ -131,7 +146,7 @@
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.13</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.14</div>
     </footer><div id="toast" class="toast"></div>
 <div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
 <script src="assets/js/app.js"></script>
