@@ -122,7 +122,7 @@ async function editMember(code){
 }
 async function saveMemberEdit(e){e.preventDefault();const f=e.currentTarget,btn=f.querySelector('button[type="submit"]');if(btn.disabled)return;btn.disabled=true;btn.textContent='กำลังบันทึก...';try{const data=Object.fromEntries(new FormData(f).entries());await api('adminUpdateMember',{token:adminToken,...data});$('#memberEditModal').classList.add('hidden');await uiAlert('บันทึกแล้ว','แก้ไขข้อมูลสมาชิกเรียบร้อย');await refreshDashboard()}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error')}finally{btn.disabled=false;btn.textContent='บันทึกข้อมูล'}}
 
-// Admin modules V1.0.13
+// Admin modules V1.0.14
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-admin-tab]').forEach(btn=>btn.addEventListener('click',()=>switchAdminTab(btn.dataset.adminTab)));
   $('#newNewsBtn')?.addEventListener('click',()=>openNewsEditor());
@@ -135,6 +135,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 function switchAdminTab(name){
   document.querySelectorAll('[data-admin-tab]').forEach(x=>x.classList.toggle('active',x.dataset.adminTab===name));
   document.querySelectorAll('[data-admin-panel]').forEach(x=>x.classList.toggle('hidden',x.dataset.adminPanel!==name));
+  if(name==='payments') loadAdminTransactions('payment');
+  if(name==='donations') loadAdminTransactions('donation');
   if(name==='news') loadAdminNews();
   if(name==='media') loadMedia();
   if(name==='settings') loadSettings();if(name==='topics') loadAdminTopics();
@@ -226,3 +228,41 @@ async function deleteAdminTopic(type,id){if(!(await uiConfirm('ลบหัว�
 
 async function loadFinanceSummary(){try{const o=await api('adminFinanceSummary',{token:adminToken}),s=o.summary||{};if($('#sumPaymentCount'))$('#sumPaymentCount').textContent=Number(s.paymentCount||0).toLocaleString('th-TH');if($('#sumPaymentAmount'))$('#sumPaymentAmount').textContent=Number(s.paymentAmount||0).toLocaleString('th-TH')+' บาท';if($('#sumDonationCount'))$('#sumDonationCount').textContent=Number(s.donationCount||0).toLocaleString('th-TH');if($('#sumDonationAmount'))$('#sumDonationAmount').textContent=Number(s.donationAmount||0).toLocaleString('th-TH')+' บาท';}catch(e){console.warn(e)}}
 document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{if(typeof adminToken!=='undefined'&&adminToken)loadFinanceSummary();},800);});
+
+async function loadAdminTransactions(type){
+  const host=type==='payment'?$('#adminPaymentList'):$('#adminDonationList');
+  if(!host)return;
+  host.innerHTML='<div class="empty">กำลังโหลด...</div>';
+  try{
+    const o=await api('adminTransactionsList',{token:adminToken,type});
+    const rows=o.rows||[];
+    host.innerHTML=rows.length?rows.map(x=>`<article class="transaction-card">
+      <div class="transaction-main">
+        <div class="transaction-title"><b>${escapeHtml(x.id)}</b><span class="status-badge ${statusClass(x.status)}">${escapeHtml(x.status)}</span></div>
+        <div class="transaction-grid">
+          <div><small>${type==='payment'?'สมาชิก':'ผู้บริจาค'}</small><strong>${escapeHtml(x.memberCode||x.donorName||'-')}</strong></div>
+          <div><small>หัวข้อ</small><strong>${escapeHtml(x.topic||'-')}</strong></div>
+          <div><small>จำนวนเงิน</small><strong>${Number(x.amount||0).toLocaleString('th-TH')} บาท</strong></div>
+          <div><small>วันเวลาโอน</small><strong>${escapeHtml(formatDate(x.date))}</strong></div>
+        </div>
+      </div>
+      <div class="transaction-actions">
+        ${x.slipUrl?`<a class="btn btn-view" href="${escapeHtml(x.slipUrl)}" target="_blank">ดูสลิป</a>`:''}
+        <button class="btn btn-soft" onclick="verifyTransaction('${type}','${escapeHtml(x.id)}','อนุมัติ')">✓ อนุมัติ</button>
+        <button class="btn btn-danger" onclick="verifyTransaction('${type}','${escapeHtml(x.id)}','ไม่อนุมัติ')">ไม่อนุมัติ</button>
+      </div>
+    </article>`).join(''):'<div class="empty">ยังไม่มีรายการ</div>';
+  }catch(e){host.innerHTML='<div class="empty">โหลดไม่สำเร็จ</div>';uiAlert('โหลดรายการไม่สำเร็จ',e.message,'error');}
+}
+async function verifyTransaction(type,id,decision){
+  if(!(await uiConfirm(decision==='อนุมัติ'?'ยืนยันรายการ':'ไม่อนุมัติรายการ',`${decision} ${id} ?`)))return;
+  try{
+    setLoading(true);
+    const o=await api('adminVerifyTransaction',{token:adminToken,type,id,decision});
+    await uiAlert('บันทึกแล้ว',o.message||'อัปเดตสถานะเรียบร้อย','success');
+    await loadAdminTransactions(type);
+    await loadFinanceSummary();
+    if(type==='payment') await refreshDashboard();
+  }catch(e){uiAlert('บันทึกไม่สำเร็จ',e.message,'error');}
+  finally{setLoading(false);}
+}
