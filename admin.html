@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin | SK Alumni Member System V1.0.19</title>
+  <title>Admin | SK Alumni Member System V1.0.20</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="admin-page">
 <header class="topbar compact">
-  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.19</span></p></div></div>
+  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.20</span></p></div></div>
   <nav class="nav-actions"><a href="index.html" class="btn btn-ghost">หน้าเว็บหลัก</a><button id="logoutBtn" class="btn btn-soft hidden">ออกจากระบบ</button></nav>
 </header>
 
@@ -105,7 +105,7 @@
       <select id="mediaSort"><option value="newest">ใหม่ → เก่า</option><option value="oldest">เก่า → ใหม่</option></select>
       <label class="btn btn-soft media-upload-btn">+ อัปโหลดภาพเว็บไซต์<input id="mediaUploadInput" type="file" accept="image/*" hidden></label>
     </div>
-    <div id="mediaAdminList" class="media-library-grid"></div>
+    <div class="media-table-wrap"><table class="media-table"><thead><tr><th>ตัวอย่าง</th><th>ชื่อไฟล์</th><th>หมวด</th><th>ขนาด</th><th>อัปเดต</th><th>จัดการ</th></tr></thead><tbody id="mediaAdminList"></tbody></table></div><div id="mediaPager" class="table-pager"></div>
   </div>
 </div>
 <div id="legacyTopicsPanel" data-admin-panel="topics" class="hidden"><div class="panel admin-module"><div class="panel-head"><div><h3>จัดการหัวข้อรายการ</h3><p>ชำระค่าสมาชิกและการบริจาค</p></div></div><div class="topic-admin-grid">
@@ -161,7 +161,7 @@
     </div>
   </div>
 </div>
-<div data-admin-panel="benefits" class="hidden"><div class="panel admin-module"><div class="panel-head"><div><h3>🎁 สิทธิประโยชน์สมาชิก</h3><p>กำหนดสิทธิประโยชน์และบันทึกการใช้สิทธิ พร้อมลงรายจ่ายบัญชีอัตโนมัติเมื่อมีค่าใช้จ่าย</p></div></div><div class="benefit-admin-layout"><section class="benefit-box"><h4>เพิ่ม / แก้ไขสิทธิประโยชน์</h4><form id="benefitForm" class="benefit-form"><input name="benefitId" type="hidden"><label>ชื่อสิทธิประโยชน์<input name="title" required></label><label>รายละเอียด<textarea name="description" rows="3"></textarea></label><label>มูลค่าโดยประมาณ (บาท)<input name="defaultAmount" type="number" min="0" step="0.01"></label><label class="check-row"><input name="active" type="checkbox" checked> เปิดใช้งาน</label><button class="btn btn-primary">บันทึกสิทธิประโยชน์</button></form><div id="benefitList" class="benefit-list"></div></section><section class="benefit-box"><h4>บันทึกการใช้สิทธิสมาชิก</h4><form id="benefitUsageForm" class="benefit-form"><label>รหัสสมาชิก<input name="memberCode" required placeholder="69-SK0001"></label><label>สิทธิประโยชน์<select name="benefitId" id="benefitUsageSelect" required></select></label><label>วันที่ใช้สิทธิ<input name="usedAt" type="date" required></label><label>มูลค่า/ค่าใช้จ่ายจริง (บาท)<input name="amount" type="number" min="0" step="0.01" value="0"></label><label>หมายเหตุ<textarea name="note" rows="3"></textarea></label><label class="check-row"><input name="postExpense" type="checkbox" checked> ลงเป็นรายจ่ายในบัญชีอัตโนมัติ</label><button class="btn btn-primary">บันทึกการใช้สิทธิ</button></form><div id="benefitUsageList" class="benefit-usage-list"></div></section></div></div></div><div data-admin-panel="reports" class="hidden">
+<div data-admin-panel="benefits" class="hidden"><div class="panel admin-module"><div class="panel-head"><div><h3>🎁 สิทธิประโยชน์สมาชิก</h3><p>กำหนดสิทธิประโยชน์และบันทึกการใช้สิทธิ พร้อมลงรายจ่ายบัญชีอัตโนมัติเมื่อมีค่าใช้จ่าย</p></div></div><div class="benefit-admin-layout"><section class="benefit-box"><h4>เพิ่ม / แก้ไขสิทธิประโยชน์</h4><form id="benefitForm" class="benefit-form"><input name="benefitId" type="hidden"><label>ชื่อสิทธิประโยชน์<input name="title" required></label><label>รายละเอียด<textarea name="description" rows="3"></textarea></label><label>มูลค่าโดยประมาณ (บาท)<input name="defaultAmount" type="number" min="0" step="0.01"></label><label class="benefit-check-line">เปิดใช้งาน <input name="active" type="checkbox" checked></label><div class="benefit-form-actions"><button class="btn btn-primary">บันทึกสิทธิประโยชน์</button><button id="deleteBenefitBtn" class="btn btn-danger hidden" type="button">ลบ</button></div></form><div id="benefitList" class="benefit-list"></div></section><section class="benefit-box"><h4>บันทึกการใช้สิทธิสมาชิก</h4><form id="benefitUsageForm" class="benefit-form"><label>รหัสสมาชิก<input name="memberCode" required placeholder="69-SK0001"></label><label>สิทธิประโยชน์<select name="benefitId" id="benefitUsageSelect" required></select></label><label>วันที่ใช้สิทธิ<input name="usedAt" type="date" required></label><label>มูลค่า/ค่าใช้จ่ายจริง (บาท)<input name="amount" type="number" min="0" step="0.01" value="0"></label><label>หมายเหตุ<textarea name="note" rows="3"></textarea></label><label class="benefit-check-line">ลงเป็นรายจ่ายในบัญชีอัตโนมัติ <input name="postExpense" type="checkbox" checked></label><button class="btn btn-primary">บันทึกการใช้สิทธิ</button></form><div id="benefitUsageList" class="benefit-usage-list"></div></section></div></div></div><div data-admin-panel="reports" class="hidden">
   <div class="panel admin-module">
     <div class="panel-head"><div><h3>📊 รายงานสรุปบัญชี</h3><p>สรุปตามช่วงวันที่ แยกรายรับ รายจ่าย และคงเหลือ</p></div></div>
     <div class="report-filter"><select id="reportPreset"><option value="month">เดือนนี้</option><option value="today">วันนี้</option><option value="year">ปีนี้</option><option value="all">ทั้งหมด</option><option value="custom">กำหนดเอง</option></select><input id="reportFrom" type="date"><input id="reportTo" type="date"><button id="reportRunBtn" class="btn btn-primary" type="button">ประมวลผล</button><button id="reportCsvBtn" class="btn btn-soft" type="button">⬇ CSV</button></div>
@@ -232,7 +232,7 @@
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.19</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.20</div>
     </footer><div id="toast" class="toast"></div>
 <div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
 <script src="assets/js/app.js"></script>
