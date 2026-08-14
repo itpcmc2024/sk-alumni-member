@@ -80,40 +80,37 @@ async function deleteMember(memberCode,name){
   }catch(err){toast(err.message,'error');}finally{setLoading(false);}
 }
 
-let currentDetailMember=null;
-async function viewMember(code){try{setLoading(true);const o=await api('adminMemberDetail',{token:adminToken,memberCode:code});currentDetailMember=o.member;renderMemberDetail(o.member);$('#memberDetailModal').classList.remove('hidden')}catch(e){uiAlert('เปิดข้อมูลไม่สำเร็จ',e.message,'error')}finally{setLoading(false)}}
-function detailItem(l,v){return `<div class="detail-item"><span>${escapeHtml(l)}</span><b>${escapeHtml(v??'-')}</b></div>`}
-function renderMemberDetail(m){
-  const photo=m.photoUrl?`<img class="detail-photo" src="${escapeHtml(m.photoUrl)}" alt="รูปสมาชิก" onerror="this.style.display='none'">`:`<div class="detail-photo placeholder">SK</div>`;
-  $('#memberDetailBody').innerHTML=`
-    <div class="detail-profile v107-detail-profile">
-      ${photo}
-      <div class="detail-status-block">
-        <span class="status-badge ${statusClass(m.status)}">${escapeHtml(m.status)}</span>
-        <h3 class="detail-member-name">${escapeHtml(m.prefix||'')} ${escapeHtml(m.fullName||'')}</h3>
-        <p class="detail-arabic">${escapeHtml(m.arabicName||'')}</p>
-      </div>
-      <div class="detail-member-code">${escapeHtml(m.memberCode||'')}</div>
-    </div>
-    <div class="detail-grid">
-      ${detailItem('วันที่สมัคร',formatDate(m.registeredAt))}
-      ${detailItem('อีเมล',m.email)}
-      ${detailItem('เบอร์โทรศัพท์',formatThaiPhone(m.phone||'-'))}
-      ${detailItem('LINE User ID',m.lineUserId||'-')}
-      ${detailItem('บ้านเลขที่',m.houseNo||'-')}
-      ${detailItem('หมู่',m.moo||'-')}
-      ${detailItem('ซอย',m.soi||'-')}
-      ${detailItem('ถนน',m.road||'-')}
-      ${detailItem('ตำบล / แขวง',m.subdistrict||'-')}
-      ${detailItem('อำเภอ / เขต',m.district||'-')}
-      ${detailItem('จังหวัด',m.province||'-')}
-      ${detailItem('รหัสไปรษณีย์',m.postalCode||'-')}
-      ${detailItem('เริ่มสมาชิก',m.memberStart?formatDate(m.memberStart):'-')}
-      ${detailItem('หมดอายุ',m.memberExpire?formatDate(m.memberExpire):'-')}
-    </div>`;
+let currentDetailMember=null,currentDetailPayload=null;
+async function viewMember(code){
+  try{setLoading(true);const o=await api('adminMemberDetail',{token:adminToken,memberCode:code});currentDetailMember=o.member;currentDetailPayload=o;renderMemberDetail(o);$('#memberDetailModal').classList.remove('hidden');}
+  catch(e){uiAlert('เปิดข้อมูลไม่สำเร็จ',e.message,'error');}finally{setLoading(false);}
 }
-
-
+function detailItem(l,v){return `<div class="detail-item"><span>${escapeHtml(l)}</span><b>${escapeHtml(v??'-')}</b></div>`}
+function historyTable(rows,kind){
+  if(!rows?.length)return '<div class="empty">ยังไม่มีประวัติ</div>';
+  return `<div class="detail-history-table"><table><thead><tr><th>วันที่</th><th>รายการ</th><th>จำนวนเงิน</th><th>สถานะ</th><th>อ้างอิง</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${escapeHtml(formatDate(x.date))}</td><td>${escapeHtml(x.title||'-')}</td><td>${Number(x.amount||0).toLocaleString('th-TH')} บาท</td><td>${escapeHtml(x.status||'-')}</td><td>${escapeHtml(x.reference||'-')}</td></tr>`).join('')}</tbody></table></div>`;
+}
+function renderMemberDetail(o){
+  const m=o.member||{},photo=m.photoUrl?`<img class="detail-photo" src="${escapeHtml(m.photoUrl)}" alt="รูปสมาชิก">`:`<div class="detail-photo placeholder">SK</div>`;
+  $('#memberDetailBody').innerHTML=`<div class="detail-profile v107-detail-profile">${photo}<div class="detail-status-block"><span class="status-badge ${statusClass(m.status)}">${escapeHtml(m.status)}</span><h3 class="detail-member-name">${escapeHtml(m.prefix||'')} ${escapeHtml(m.fullName||'')}</h3><p class="detail-arabic">${escapeHtml(m.arabicName||'')}</p></div><div class="detail-member-code">${escapeHtml(m.memberCode||'')}</div></div>
+  <div class="admin-member-tabs"><button class="active" data-detail-tab="profile">ข้อมูลส่วนตัว</button><button data-detail-tab="payments">ชำระค่าสมาชิก</button><button data-detail-tab="donations">บริจาค</button><button data-detail-tab="benefits">สิทธิประโยชน์</button></div>
+  <section data-detail-panel="profile"><div class="detail-grid">${detailItem('วันที่สมัคร',formatDate(m.registeredAt))}${detailItem('อีเมล',m.email)}${detailItem('เบอร์โทรศัพท์',formatThaiPhone(m.phone||'-'))}${detailItem('LINE User ID',m.lineUserId||'-')}${detailItem('บ้านเลขที่',m.houseNo||'-')}${detailItem('หมู่',m.moo||'-')}${detailItem('ซอย',m.soi||'-')}${detailItem('ถนน',m.road||'-')}${detailItem('ตำบล / แขวง',m.subdistrict||'-')}${detailItem('อำเภอ / เขต',m.district||'-')}${detailItem('จังหวัด',m.province||'-')}${detailItem('รหัสไปรษณีย์',m.postalCode||'-')}${detailItem('เริ่มสมาชิก',m.memberStart?formatDate(m.memberStart):'-')}${detailItem('หมดอายุ',m.memberExpire?formatDate(m.memberExpire):'-')}</div></section>
+  <section data-detail-panel="payments" class="hidden">${historyTable(o.payments,'payment')}</section>
+  <section data-detail-panel="donations" class="hidden">${historyTable(o.donations,'donation')}</section>
+  <section data-detail-panel="benefits" class="hidden">${historyTable(o.benefits,'benefit')}</section>`;
+  document.querySelectorAll('[data-detail-tab]').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('[data-detail-tab]').forEach(x=>x.classList.toggle('active',x===btn));document.querySelectorAll('[data-detail-panel]').forEach(p=>p.classList.toggle('hidden',p.dataset.detailPanel!==btn.dataset.detailTab));});
+}
+function formatThaiPhone(v){const d=String(v||'').replace(/\D/g,'');return d.length===10?`${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`:String(v||'-')}
+function closeMemberDetail(){$('#memberDetailModal')?.classList.add('hidden');}
+document.addEventListener('click',e=>{if(e.target.closest('[data-close-member-detail]'))closeMemberDetail();});
+document.addEventListener('DOMContentLoaded',()=>{$('#detailPrintBtn')?.addEventListener('click',()=>currentDetailMember&&openPrintApplication(currentDetailMember));});
+async function printMember(code){try{setLoading(true);const o=await api('adminMemberDetail',{token:adminToken,memberCode:code});openPrintApplication(o.member);}catch(e){uiAlert('พิมพ์ไม่สำเร็จ',e.message,'error');}finally{setLoading(false);}}
+function openPrintApplication(m){
+  const w=window.open('','_blank','width=900,height=1100');if(!w){uiAlert('ไม่สามารถเปิดหน้าพิมพ์','กรุณาอนุญาต Pop-up สำหรับเว็บไซต์นี้','warning');return;}
+  const logo=new URL('assets/img/association-logo.jpg',location.href).href;
+  const addr=[m.houseNo||'',m.moo?'หมู่ '+m.moo:'',m.soi?'ซอย '+m.soi:'',m.road?'ถนน '+m.road:'',m.subdistrict?'ตำบล/แขวง '+m.subdistrict:'',m.district?'อำเภอ/เขต '+m.district:'',m.province?'จังหวัด '+m.province:'',m.postalCode||''].filter(Boolean).join(' ');
+  w.document.write(`<!doctype html><html lang="th"><head><meta charset="utf-8"><title>ใบสมัคร ${escapeHtml(m.memberCode)}</title><style>@page{size:A4;margin:14mm}body{font-family:Arial,sans-serif;color:#173c31}.head{text-align:center;border-bottom:2px solid #23815d;padding-bottom:12px}.head img{width:86px}.member{display:grid;grid-template-columns:115px 1fr;gap:18px;margin:18px 0}.photo{width:110px;height:135px;object-fit:cover;border:1px solid #ccc}table{width:100%;border-collapse:collapse}td{padding:8px;border:1px solid #cfdcd5}td:first-child{width:28%;font-weight:700;background:#f1f8f4}.section{font-weight:800;color:#18724f;margin:17px 0 7px}.sign{display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px;margin-top:55px;text-align:center}.line{border-top:1px dotted #333;padding-top:5px}.foot{text-align:right;font-size:10px;color:#78857f;margin-top:45px}.actions{position:fixed;right:18px;top:18px}@media print{.actions{display:none}}</style></head><body><button class="actions" onclick="window.print()">🖨 พิมพ์ / Save as PDF</button><div class="head"><img src="${logo}"><h2>ใบสมัครสมาชิก</h2><h3>สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ (สุเหร่าเขียว)</h3></div><div class="member">${m.photoUrl?`<img class="photo" src="${escapeHtml(m.photoUrl)}">`:`<div class="photo">รูปถ่าย</div>`}<table><tr><td>รหัสสมาชิก</td><td><b>${escapeHtml(m.memberCode)}</b></td></tr><tr><td>สถานะ</td><td>${escapeHtml(m.status)}</td></tr><tr><td>วันที่สมัคร</td><td>${escapeHtml(formatDate(m.registeredAt))}</td></tr></table></div><div class="section">ข้อมูลส่วนตัว</div><table><tr><td>ชื่อ-สกุล</td><td>${escapeHtml((m.prefix||'')+' '+(m.fullName||''))}</td></tr><tr><td>ชื่ออาหรับ</td><td>${escapeHtml(m.arabicName||'-')}</td></tr><tr><td>เบอร์โทรศัพท์</td><td>${escapeHtml(formatThaiPhone(m.phone||'-'))}</td></tr><tr><td>อีเมล</td><td>${escapeHtml(m.email||'-')}</td></tr></table><div class="section">ที่อยู่</div><table><tr><td>ที่อยู่</td><td>${escapeHtml(addr||'-')}</td></tr></table><div class="sign"><div><div class="line">ลายมือชื่อผู้สมัคร</div></div><div><div class="line">ประธานสมาคมฯ</div></div><div><div class="line">เจ้าหน้าที่ผู้ตรวจสอบ</div></div></div><div class="foot">© 2026 SK Alumni Member System by KimhanIkals | V1.0.18</div></body></html>`);w.document.close();
+}
 async function editMember(code){
   try{setLoading(true);const o=await api('adminMemberDetail',{token:adminToken,memberCode:code});const m=o.member;
     const f=$('#memberEditForm'); ['memberCode','prefix','fullName','arabicName','email','phone','houseNo','moo','soi','road','subdistrict','district','province','postalCode'].forEach(k=>{if(f.elements[k])f.elements[k].value=m[k]||''});
@@ -122,7 +119,7 @@ async function editMember(code){
 }
 async function saveMemberEdit(e){e.preventDefault();const f=e.currentTarget,btn=f.querySelector('button[type="submit"]');if(btn.disabled)return;btn.disabled=true;btn.textContent='กำลังบันทึก...';try{const data=Object.fromEntries(new FormData(f).entries());await api('adminUpdateMember',{token:adminToken,...data});$('#memberEditModal').classList.add('hidden');await uiAlert('บันทึกแล้ว','แก้ไขข้อมูลสมาชิกเรียบร้อย');await refreshDashboard()}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error')}finally{btn.disabled=false;btn.textContent='บันทึกข้อมูล'}}
 
-// Admin modules V1.0.17
+// Admin modules V1.0.18
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-admin-tab]').forEach(btn=>btn.addEventListener('click',()=>switchAdminTab(btn.dataset.adminTab)));
   $('#newNewsBtn')?.addEventListener('click',()=>openNewsEditor());
@@ -157,7 +154,7 @@ async function loadAdminNews(){
 }
 function openNewsEditor(n=null){
   const f=$('#newsEditForm'); f.reset(); f.active.checked=true;
-  f.newsId.value=n?.NewsId||''; f.category.value=n?.Category||'ข่าวสาร'; f.title.value=n?.Title||''; f.content.value=n?.Content||''; f.active.checked=String(n?.Active??true).toUpperCase()!=='FALSE';
+  f.newsId.value=n?.NewsId||''; f.category.value=n?.Category||'ข่าวสาร'; f.title.value=n?.Title||''; f.content.value=n?.Content||''; f.active.checked=String(n?.Active??true).toUpperCase()!=='FALSE'; const h=$('#newsExistingImages');if(h)h.innerHTML=(n?.Images||[]).map(x=>`<button type="button" class="news-editor-thumb" onclick="window.open('${escapeHtml(x.url)}','_blank')"><img src="${escapeHtml(x.url)}"></button>`).join('');
   $('#newsEditModal').classList.remove('hidden');
 }
 function editNews(id){openNewsEditor(adminNewsCache.find(x=>String(x.NewsId)===String(id)));}
@@ -168,7 +165,7 @@ async function saveNews(e){
   if(f.dataset.saving==='1') return;
   const title=String(f.title.value||'').trim();
   const content=String(f.content.value||'').trim();
-  const imageFile=$('#newsImageInput')?.files?.[0]||null;
+  const imageFiles=[...($('#newsImageInput')?.files||[])].slice(0,8);
   if(!title || !content){
     await uiAlert('ข้อมูลยังไม่ครบ','กรุณากรอกหัวข้อและรายละเอียดข่าว','warning');
     return;
@@ -183,7 +180,10 @@ async function saveNews(e){
     setLoading(true);
     const requestId=`${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const newsPayload={token:adminToken,requestId,newsId:f.newsId.value,category:f.category.value,title,content,active:f.active.checked};
-    if(imageFile){newsPayload.imageDataUrl=await fileToDataUrl(imageFile);newsPayload.imageName=imageFile.name;}
+    if(imageFiles.length){
+      newsPayload.imageDataUrls=[];newsPayload.imageNames=[];
+      for(const file of imageFiles){newsPayload.imageDataUrls.push(await compressImageForUpload(file));newsPayload.imageNames.push(file.name);}
+    }
     await api('adminSaveNews',newsPayload);
     $('#newsEditModal').classList.add('hidden');
     await uiAlert('บันทึกแล้ว','ข่าวสารถูกบันทึกเรียบร้อย','success');
@@ -387,3 +387,9 @@ document.addEventListener('click',e=>{
 });
 
 let benefitAdminRows=[];async function loadBenefitsAdmin(){try{const o=await api('adminBenefitsList',{token:adminToken});benefitAdminRows=o.benefits||[];const host=$('#benefitList'),sel=$('#benefitUsageSelect');if(host)host.innerHTML=benefitAdminRows.map(x=>`<div class="benefit-row"><div><b>${escapeHtml(x.title)}</b><small>${escapeHtml(x.description||'')} • ${Number(x.defaultAmount||0).toLocaleString('th-TH')} บาท</small></div><button class="btn btn-view" onclick="editBenefit('${escapeHtml(x.id)}')">แก้ไข</button></div>`).join('')||'<div class="empty">ยังไม่มีสิทธิประโยชน์</div>';if(sel)sel.innerHTML=benefitAdminRows.filter(x=>x.active).map(x=>`<option value="${escapeHtml(x.id)}">${escapeHtml(x.title)}</option>`).join('');const u=await api('adminBenefitUsageList',{token:adminToken});renderBenefitUsage(u.rows||[]);}catch(e){uiAlert('โหลดสิทธิประโยชน์ไม่สำเร็จ',e.message,'error');}}function editBenefit(id){const x=benefitAdminRows.find(b=>b.id===id),f=$('#benefitForm');if(!x||!f)return;f.benefitId.value=x.id;f.title.value=x.title;f.description.value=x.description||'';f.defaultAmount.value=x.defaultAmount||0;f.active.checked=!!x.active;}function renderBenefitUsage(rows){const host=$('#benefitUsageList');if(!host)return;host.innerHTML=rows.length?rows.map(x=>`<div class="benefit-row"><div><b>${escapeHtml(x.memberCode)} · ${escapeHtml(x.title)}</b><small>${escapeHtml(x.date)} • ${Number(x.amount||0).toLocaleString('th-TH')} บาท • ${escapeHtml(x.note||'')}</small></div></div>`).join(''):'<div class="empty">ยังไม่มีประวัติการใช้สิทธิ</div>';}document.addEventListener('DOMContentLoaded',()=>{$('#benefitForm')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;try{await api('adminBenefitSave',{token:adminToken,benefitId:f.benefitId.value,title:f.title.value,description:f.description.value,defaultAmount:f.defaultAmount.value,active:f.active.checked});f.reset();f.active.checked=true;loadBenefitsAdmin();}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error');}});$('#benefitUsageForm')?.addEventListener('submit',async e=>{e.preventDefault();const f=e.currentTarget;try{await api('adminBenefitUsageSave',{token:adminToken,memberCode:f.memberCode.value,benefitId:f.benefitId.value,usedAt:f.usedAt.value,amount:f.amount.value,note:f.note.value,postExpense:f.postExpense.checked});f.reset();f.postExpense.checked=true;loadBenefitsAdmin();await loadFinanceSummary();}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error');}});});
+async function compressImageForUpload(file){
+  if(!file.type.startsWith('image/'))throw new Error('รองรับเฉพาะไฟล์รูปภาพ');
+  const raw=await fileToDataUrl(file),img=new Image();await new Promise((ok,bad)=>{img.onload=ok;img.onerror=bad;img.src=raw;});
+  const max=1400,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.82);
+}
