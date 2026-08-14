@@ -1,4 +1,4 @@
-SK Alumni Member System V1.0.20 - Hybrid
+SK Alumni Member System V1.0.21 - Hybrid
 ================================================
 Frontend : GitHub Pages
 Backend  : Google Apps Script
@@ -62,7 +62,7 @@ Drive Folder ID:
 7. หลังทดสอบผ่าน:
    เปลี่ยนรหัสผ่าน Admin โดยใช้ changeDefaultAdminPassword() ตามคำอธิบายใน Code.gs
 
-สิ่งที่มีใน V1.0.20
+สิ่งที่มีใน V1.0.21
 -----------------
 - หน้าแรก Responsive ขาว-เขียวพาสเทล
 - สมัครสมาชิก 3 Step
@@ -77,7 +77,7 @@ Drive Folder ID:
 - ลบสมาชิก + Audit Log
 - Tabs โครงสร้างสำหรับ Payment/Donation/Benefit/News/Accounting เตรียมไว้แล้ว
 
-ยังไม่รวมใน V1.0.20
+ยังไม่รวมใน V1.0.21
 ------------------
 - LINE LIFF
 - ระบบค้นหาที่อยู่จากฐานรหัสไปรษณีย์
@@ -89,7 +89,7 @@ Drive Folder ID:
 - สิทธิประโยชน์เต็มระบบ
 - บัญชีรายรับ-รายจ่าย/รายงานเต็มระบบ
 
-เวอร์ชัน: V1.0.20
+เวอร์ชัน: V1.0.21
 
 
 Repository:
@@ -98,9 +98,9 @@ https://github.com/itpcmc2024/sk-alumni-member
 GAS Web App:
 https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec
 
-V1.0.20: Approved homepage, original logo/mosque/QR assets, copyright by KimhanIkals.
+V1.0.21: Approved homepage, original logo/mosque/QR assets, copyright by KimhanIkals.
 
-V1.0.20 - Address & UX Fix
+V1.0.21 - Address & UX Fix
 --------------------------
 1. mosque-reference.jpg แสดงด้วย <img> โดยตรง ไม่พึ่ง CSS relative background path
 2. ที่อยู่เลือกแบบ รหัสไปรษณีย์ -> จังหวัด -> อำเภอ/เขต -> ตำบล/แขวง
@@ -110,9 +110,9 @@ V1.0.20 - Address & UX Fix
 5. Alert/Confirm เปลี่ยนเป็น Modal UI
 6. Admin ทดสอบ: username admin / password admin1234
 
-V1.0.20: searchable postcode, admin detail, print/save PDF, pastel status cards.
+V1.0.21: searchable postcode, admin detail, print/save PDF, pastel status cards.
 
-V1.0.20 - Multi Page + Admin Phase 1
+V1.0.21 - Multi Page + Admin Phase 1
 - register.html / status.html แยกหน้า
 - ทุกหน้ามี Header + Footer
 - ปุ่มยืนยันสมัคร disabled จนกว่าจะติ๊ก Consent
@@ -121,9 +121,9 @@ V1.0.20 - Multi Page + Admin Phase 1
 - รูปสมาชิกปรับเป็น Drive thumbnail + public link; มี repairMemberPhotoSharing()
 - Admin: Members / News CRUD / Media list / Settings
 
-V1.0.20: member detail layout, print fixes, news fixed scroll, register steps moved, payment/donation pages, member sort/pagination, Settings text format.
+V1.0.21: member detail layout, print fixes, news fixed scroll, register steps moved, payment/donation pages, member sort/pagination, Settings text format.
 
-V1.0.20 - Cute Homepage & News Fix
+V1.0.21 - Cute Homepage & News Fix
 ---------------------------------
 - Remove registration-step / payment cards from homepage
 - Refresh feature cards with cute friendly visual icons
@@ -131,7 +131,7 @@ V1.0.20 - Cute Homepage & News Fix
 - Fix admin news save, disable button while saving
 - GAS requestId + LockService + recent duplicate protection
 
-V1.0.20 - Cute Visual Polish
+V1.0.21 - Cute Visual Polish
 ---------------------------
 - Homepage registration-step and QR/payment block removed completely.
 - Homepage news displays only 3 items in a compact fixed-height panel.
@@ -140,7 +140,7 @@ V1.0.20 - Cute Visual Polish
 - Illustrations are derived from the approved homepage visual reference, so GitHub Pages does not depend on external image hosts.
 - News anti-double-submit behavior from V1.0.8 is retained.
 
-V1.0.20 - Cute Assets + Donation Form
+V1.0.21 - Cute Assets + Donation Form
 --------------------------------------
 - Cute homepage art moved to assets/img root: cute-register/status/payment/donation/benefits/news.jpg
 - Register journey has four illustrated cards again.
@@ -149,7 +149,7 @@ V1.0.20 - Cute Assets + Donation Form
 - GAS adds publicDonationTopics + submitDonation, saves slips to DonationSlips and donation rows to Donations.
 - Donation topics are seeded on setupSystem().
 
-V1.0.20 - Embedded Cute + Smart Donation
+V1.0.21 - Embedded Cute + Smart Donation
 -----------------------------------------
 - Cute menu and registration-step illustrations are embedded directly into HTML as WebP data URIs.
   This removes dependency on uploading separate cute image files to GitHub.
@@ -160,7 +160,7 @@ V1.0.20 - Embedded Cute + Smart Donation
 - Slip preview is shown before submit.
 - Slip authenticity verification is not enabled yet; integration point is reserved for a verification API.
 
-V1.0.20
+V1.0.21
 - News category colors + optional news thumbnail upload.
 - Correct homepage counters: total / this year / new this month / activities this year.
 - Softer hero background; no large hero logo; header logo styled like footer.
@@ -168,9 +168,9 @@ V1.0.20
 - Admin can add payment/donation topics.
 - Donation topics: สมทบกองทุนการศึกษา / เพื่อกิจกรรมสมาคม / กิจการอื่นๆ.
 
-V1.0.20: Homepage rebuilt to match approved reference, real association logo retained; reference assets placed in assets/img root; admin finance summary added.
+V1.0.21: Homepage rebuilt to match approved reference, real association logo retained; reference assets placed in assets/img root; admin finance summary added.
 
-V1.0.20 - Asset Recovery + Admin Transactions
+V1.0.21 - Asset Recovery + Admin Transactions
 ----------------------------------------------
 - Reference-style hero/card art is embedded directly into index.html as WebP data URIs.
 - The same image assets are also included as normal JPEGs in assets/img for backup.
@@ -179,10 +179,10 @@ V1.0.20 - Asset Recovery + Admin Transactions
 - Added Admin tabs for payment and donation verification, with slip view and approve/reject actions.
 - Approved membership payment updates member status to สมาชิกสมบูรณ์.
 
-V1.0.20: Web Content Manager, in-page News Center with activity images, Accounting ledger, date-range Reports, grouped Website Management menu.
+V1.0.21: Web Content Manager, in-page News Center with activity images, Accounting ledger, date-range Reports, grouped Website Management menu.
 - Approved payments/donations automatically post to Accounting once, using transaction ID as duplicate-safe reference. Reports include Today / This month / This year / All / Custom.
 
-V1.0.20 - News UX + Transaction Tables + Real Accounting + Media Library
+V1.0.21 - News UX + Transaction Tables + Real Accounting + Media Library
 -----------------------------------------------------------------------
 - Removed quote card from homepage dashboard row; Latest News gets more width.
 - Top News feature card opens the in-page News Center.
@@ -193,16 +193,16 @@ V1.0.20 - News UX + Transaction Tables + Real Accounting + Media Library
 - Summary Report exports CSV using the current date filter.
 - Media manager redesigned as a searchable/filterable gallery with preview, Drive link and WebsiteMedia upload.
 
-V1.0.20 FIX1 - SetupSystem Repair
+V1.0.21 FIX1 - SetupSystem Repair
 ---------------------------------
 - Restored missing seedAdmin_(ss) function.
 - setupSystem() can create/use AdminUsers again.
 - Default admin seed remains: username admin / password admin1234 (only created if AdminUsers is empty).
 - Added checkSetupFunctions() diagnostic helper.
 
-V1.0.20: Restored quote, clean background, News Center hides homepage dashboard row, benefit usage with accounting expense, member portal/history.
+V1.0.21: Restored quote, clean background, News Center hides homepage dashboard row, benefit usage with accounting expense, member portal/history.
 
-V1.0.20 - Portal Fix + Admin Member 360 + Multi-Image Activities + Phase 2
+V1.0.21 - Portal Fix + Admin Member 360 + Multi-Image Activities + Phase 2
 -------------------------------------------------------------------------
 - Member Portal login accepts Member Code + registered Email OR Phone.
 - Member Portal session changed to server-side CacheService token (12 hours).
@@ -213,7 +213,7 @@ V1.0.20 - Portal Fix + Admin Member 360 + Multi-Image Activities + Phase 2
 - News popup and News Center show locked-size thumbnail galleries; click thumbnail to enlarge.
 - Fixed duplicate Benefits/BenefitUsage schema definitions and made setup header migration non-destructive.
 
-V1.0.20 - Gallery Navigation + Active Tabs + Hero Cleanup + Member Dashboard
+V1.0.21 - Gallery Navigation + Active Tabs + Hero Cleanup + Member Dashboard
 ----------------------------------------------------------------------------
 - News/activity image lightbox now supports Previous / Next buttons.
 - Keyboard support: Left/Right arrows to navigate; Escape to close.
@@ -222,7 +222,7 @@ V1.0.20 - Gallery Navigation + Active Tabs + Hero Cleanup + Member Dashboard
 - Hero/banner stray edge/decorative line overrides removed.
 - Member Portal Phase 3 adds summary dashboard: status, approved membership payments, approved donations, benefit usage count.
 
-V1.0.20 - Alumni Registration Flow + Payment QR + Admin UX Fixes
+V1.0.21 - Alumni Registration Flow + Payment QR + Admin UX Fixes
 - Menu reordered and registration wording changed to "ลงทะเบียนศิษย์เก่า".
 - Other prefix can be typed and saved to Members.Prefix.
 - Photo + consent are both required; image is resized/compressed before upload.
@@ -234,3 +234,14 @@ V1.0.20 - Alumni Registration Flow + Payment QR + Admin UX Fixes
 - Status colors improved, media library changed to paginated table.
 - Benefit value auto-fills usage amount; delete/deactivate added; checkbox layout improved.
 - Responsive improvements for desktop/tablet/mobile.
+
+V1.0.21 – Member Portal Phase 3 + Status Workflow + Performance
+- สิทธิประโยชน์เป็นทางเข้า Member Portal; เฉพาะสถานะ “สมาชิกสมบูรณ์” จึงดู/แก้ไขข้อมูลได้
+- สถานะอัตโนมัติ: ลงทะเบียน=รอชำระค่าสมาชิก, แจ้งชำระ=รอตรวจสอบการชำระ, Admin อนุมัติการชำระ=รอตรวจสอบข้อมูล, Admin ยืนยันข้อมูล=สมาชิกสมบูรณ์
+- Member Portal session restore, status-gate ทุก API ที่แก้ไขข้อมูล
+- ปรับ public stats cache + LockService ใน transaction สำคัญ
+- ลบสมาชิก/ข่าว/สิทธิ/ประวัติใช้สิทธิแบบ cascade และลบ/Trash ไฟล์ที่เกี่ยวข้อง
+- แก้ปุ่มพิมพ์ด้วยการเปิดหน้าต่างพิมพ์ทันที ก่อนรอ API (ลดปัญหา popup blocker)
+- Media Library ย้าย Pagination ไว้หัวตาราง + 5/10/20/All + ลบไฟล์พร้อมล้าง reference
+- สิทธิประโยชน์แยกเมนูย่อย: จัดการสิทธิ / บันทึกการใช้สิทธิ / ประวัติแบบตาราง
+- Responsive menu เปลี่ยนเป็น grid ไม่มี horizontal scrollbar
