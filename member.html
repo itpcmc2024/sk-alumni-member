@@ -1,7 +1,7 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css"><title>สมาชิกของฉัน | SK Alumni Member System V1.0.20</title></head>
+<link rel="stylesheet" href="assets/css/style.css"><title>สมาชิกของฉัน | SK Alumni Member System V1.0.21</title></head>
 <body class="v105-page inner-page"><header class="v105-header">
       <a class="v105-brand" href="index.html">
         <img src="assets/img/association-logo.jpg" alt="โลโก้สมาคม">
@@ -9,36 +9,27 @@
       </a>
       <nav><a class="" href="index.html"><span>🕌</span><small>หน้าแรก</small></a><a class="" href="register.html"><span>🧕🏻</span><small>ลงทะเบียนศิษย์เก่า</small></a><a class="" href="status.html"><span>🔎</span><small>ตรวจสอบสถานะ</small></a><a class="active" href="member.html"><span>🎁</span><small>สิทธิประโยชน์</small></a><a class="" href="donation.html"><span>🤲🏻</span><small>บริจาค</small></a><a class="" href="index.html#news-center"><span>📣</span><small>ข่าวสาร</small></a><a class="" href="admin.html"><span>🌙</span><small>Admin</small></a></nav>
       <a class="linebtn" href="register.html"><b>LINE</b>&nbsp; ลงทะเบียนผ่าน LINE &nbsp;›</a>
-    </header><main class="member-main">
-  <section class="member-lookup panel">
-    <span class="eyebrow">MEMBER PORTAL</span>
-    <h2>ค้นหาข้อมูลสมาชิก</h2>
-    <p>ใน V1.0.4 ใช้รหัสสมาชิกและอีเมลที่สมัครร่วมกันเพื่อตรวจสอบข้อมูล</p>
-    <form id="memberLookupForm" class="form-grid">
-      <label>รหัสสมาชิก<input name="memberCode" required placeholder="69-SK0001"></label>
-      <label>อีเมล<input name="email" type="email" required placeholder="name@example.com"></label>
-      <div class="align-end"><button class="btn btn-primary full">เปิดข้อมูลสมาชิก</button></div>
-    </form>
-  </section>
-
-  <section id="memberProfile" class="hidden">
-    <div class="member-card">
-      <div class="member-avatar" id="memberAvatar">SK</div>
-      <div class="member-identity">
-        <span id="memberStatusBadge" class="status-badge"></span>
-        <h2 id="memberName">-</h2>
-        <p id="memberArabic">-</p>
-        <strong id="memberCode">-</strong>
-      </div>
-    </div>
-
-    <div class="portal-grid">
-      <div class="panel"><h3>ข้อมูลสมาชิก</h3><div id="memberInfo"></div></div>
-      <div class="panel"><h3>ประวัติการเป็นสมาชิก</h3><div class="empty">ระบบประวัติการต่ออายุจะเพิ่มในเวอร์ชันค่าสมาชิก</div></div>
-      <div class="panel"><h3>ประวัติการชำระเงิน</h3><div class="empty">ยังไม่มีรายการชำระเงินใน V1.0.4</div></div>
-      <div class="panel"><h3>สิทธิประโยชน์</h3><div class="empty">ระบบสิทธิประโยชน์จะเชื่อมต่อในเวอร์ชันถัดไป</div></div>
-    </div>
-  </section>
+    </header><main class="standalone-main member-gateway-main">
+<section class="standalone-card member-gateway-card">
+  <div class="page-intro"><span>🎁 MEMBER BENEFITS & PORTAL</span><h1>สิทธิประโยชน์สมาชิก</h1><p>สมาชิกสมบูรณ์สามารถเข้าสู่ข้อมูลส่วนตัว ประวัติการชำระ บริจาค และการใช้สิทธิประโยชน์ได้จากหน้านี้</p></div>
+  <div class="member-gateway-grid">
+    <section class="portal-login-box">
+      <h3>เข้าสู่ข้อมูลสมาชิก</h3>
+      <p>กรอกรหัสสมาชิก พร้อมอีเมลหรือเบอร์โทรศัพท์ที่ใช้ลงทะเบียน</p>
+      <form id="memberPortalGatewayForm" class="portal-login-grid">
+        <label>รหัสสมาชิก<input id="gatewayMemberCode" name="memberCode" required placeholder="69-SK0001" autocomplete="off"></label>
+        <label>อีเมล หรือ เบอร์โทรศัพท์<input id="gatewayIdentifier" name="identifier" required placeholder="name@example.com หรือ 08xxxxxxxx"></label>
+        <button class="btn btn-primary" type="submit">เปิดข้อมูลและสิทธิประโยชน์</button>
+      </form>
+      <div class="portal-access-note">🔒 ระบบอนุญาตให้เข้าดู/แก้ไขข้อมูลส่วนตัวเฉพาะผู้ที่มีสถานะ <b>สมาชิกสมบูรณ์</b> เท่านั้น</div>
+    </section>
+    <aside class="benefit-access-help">
+      <span>🎁</span><h3>สมาชิกสมบูรณ์ดูอะไรได้บ้าง</h3>
+      <ul><li>ข้อมูลส่วนตัวและแก้ไขข้อมูลติดต่อ</li><li>ประวัติชำระค่าสมาชิก</li><li>ประวัติการบริจาค</li><li>ประวัติการใช้สิทธิประโยชน์</li><li>บัตรสมาชิกดิจิทัลและเอกสารสมาชิก</li></ul>
+      <a class="btn btn-soft" href="status.html">ยังไม่แน่ใจสถานะ? ตรวจสอบก่อน</a>
+    </aside>
+  </div>
+</section>
 </main>
 <footer class="v105-footer">
       <div class="footer-logo-wrap"><img src="assets/img/association-logo.jpg" alt="โลโก้สมาคม"></div>
@@ -47,7 +38,7 @@
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.20</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.21</div>
     </footer>
 <div id="toast" class="toast"></div><div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
 <script src="assets/js/app.js"></script><script src="assets/js/member.js"></script></body></html>
