@@ -5,7 +5,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
-<title>SK Alumni Member System V1.0.16</title>
+<title>SK Alumni Member System V1.0.17</title>
 </head>
 <body class="v105-page home-page v114-home">
 <header class="v105-header">
@@ -48,7 +48,7 @@
       <div class="v114-card-body"><h3>ข่าวสาร</h3><p>กิจกรรม & ประชาสัมพันธ์</p><span>ดูข่าวสาร　›</span></div>
     </a></div></section>
 
-  <section class="v114-dashboard">
+  <section id="homeDashboardRow" class="v114-dashboard">
     <div class="v114-panel v114-stats">
       <h3>👥 จำนวนสมาชิกล่าสุด</h3>
       <div class="v114-stat-grid">
@@ -59,6 +59,7 @@
       </div>
     </div>
 
+    <div class="v114-panel v114-quote"><span class="qmark">“</span><p><span id="homeQuoteText">เรามาไกลเพราะการศึกษา<br>เราจะไปได้ไกลกว่า<br>เพราะความร่วมมือของเรา</span></p><span class="heart">❤️</span><small>— สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ —</small></div>
     <div class="v114-panel v114-news" id="news">
       <div class="v114-news-head"><h3>📣 ข่าวสารล่าสุด</h3><button id="showAllNewsBtn">ดูทั้งหมด ›</button></div>
       <div id="newsList" class="v114-news-list"><div class="news-loading">กำลังโหลดข่าวสาร...</div></div>
@@ -84,7 +85,7 @@
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.16</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.17</div>
     </footer>
 
 <div id="newsPopupModal" class="member-detail-modal hidden">
