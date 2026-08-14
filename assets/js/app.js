@@ -1,9 +1,9 @@
 /*
- SK Alumni Member System V1.0.16 - Hybrid
+ SK Alumni Member System V1.0.17 - Hybrid
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.16',
+  VERSION: '1.0.17',
   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
@@ -283,7 +283,8 @@ async function loadPublicHomeContent(){
 }
 function openNewsCenter(list,selected){
   const frame=$('#newsCenter');if(!frame)return;
-  frame.classList.remove('hidden');frame.scrollIntoView({behavior:'smooth',block:'start'});
+  frame.classList.remove('hidden');
+  $('#homeDashboardRow')?.classList.add('hidden');frame.scrollIntoView({behavior:'smooth',block:'start'});
   const rows=list||[],host=$('#newsCenterList');
   host.innerHTML=rows.length?rows.map((n,i)=>`<button class="news-center-row" type="button" data-news-index="${i}">
     <div class="news-center-thumb ${newsCategoryClass(n.category)}">${n.imageUrl?`<img src="${escapeHtml(n.imageUrl)}" alt="" loading="lazy">`:newsEmoji(n.category)}</div>
@@ -296,7 +297,7 @@ function renderNewsCenterDetail(n){
   const host=$('#newsCenterDetail');if(!host||!n)return;
   host.innerHTML=`${n.imageUrl?`<button class="news-detail-image-btn" type="button" onclick="openImageLightbox('${escapeHtml(n.imageUrl)}')"><img class="news-detail-image" src="${escapeHtml(n.imageUrl)}" alt=""></button>`:''}<div class="news-detail-meta"><span class="${newsCategoryClass(n.category)}">${escapeHtml(n.category||'ข่าวสาร')}</span>${n.publishDate?`<time>${escapeHtml(formatShortDate(n.publishDate))}</time>`:''}</div><h2>${escapeHtml(n.title||'')}</h2><div class="news-detail-content">${escapeHtml(n.content||'').replace(/\\n/g,'<br>')}</div>`;
 }
-document.addEventListener('DOMContentLoaded',()=>{$('#closeNewsCenterBtn')?.addEventListener('click',()=>$('#newsCenter')?.classList.add('hidden'));});
+document.addEventListener('DOMContentLoaded',()=>{$('#closeNewsCenterBtn')?.addEventListener('click',()=>{$('#newsCenter')?.classList.add('hidden');$('#homeDashboardRow')?.classList.remove('hidden');});});
 
 
 function openNewsPopup(n){
