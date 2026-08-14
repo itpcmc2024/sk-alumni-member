@@ -1,9 +1,9 @@
 /*
- SK Alumni Member System V1.0.17 - Hybrid
+ SK Alumni Member System V1.0.18 - Hybrid
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.17',
+  VERSION: '1.0.18',
   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
@@ -207,7 +207,7 @@ function renderHomeNews(list){
   if(!list.length){host.innerHTML='<div class="news-empty">ยังไม่มีข่าวสาร</div>';return;}
   host.innerHTML=list.slice(0,8).map((n,i)=>{
     const cat=newsCategoryClass(n.category);
-    const thumb=n.imageUrl?`<img src="${escapeHtml(n.imageUrl)}" alt="" loading="lazy">`:newsEmoji(n.category);
+    const firstImg=newsImages(n)[0]||'';const thumb=firstImg?`<img src="${escapeHtml(firstImg)}" alt="" loading="lazy">`:newsEmoji(n.category);
     return `<button class="home-news-item home-news-clickable" type="button" data-home-news-index="${i}">
       <div class="news-thumb ${cat}">${thumb}</div>
       <div class="home-news-copy">
@@ -295,7 +295,7 @@ function openNewsCenter(list,selected){
 }
 function renderNewsCenterDetail(n){
   const host=$('#newsCenterDetail');if(!host||!n)return;
-  host.innerHTML=`${n.imageUrl?`<button class="news-detail-image-btn" type="button" onclick="openImageLightbox('${escapeHtml(n.imageUrl)}')"><img class="news-detail-image" src="${escapeHtml(n.imageUrl)}" alt=""></button>`:''}<div class="news-detail-meta"><span class="${newsCategoryClass(n.category)}">${escapeHtml(n.category||'ข่าวสาร')}</span>${n.publishDate?`<time>${escapeHtml(formatShortDate(n.publishDate))}</time>`:''}</div><h2>${escapeHtml(n.title||'')}</h2><div class="news-detail-content">${escapeHtml(n.content||'').replace(/\\n/g,'<br>')}</div>`;
+  host.innerHTML=`${newsImages(n).length?`<div class="news-detail-gallery">${newsImages(n).map(u=>`<button type="button" onclick="openImageLightbox('${escapeHtml(u)}')"><img src="${escapeHtml(u)}" alt=""></button>`).join('')}</div>`:''}<div class="news-detail-meta"><span class="${newsCategoryClass(n.category)}">${escapeHtml(n.category||'ข่าวสาร')}</span>${n.publishDate?`<time>${escapeHtml(formatShortDate(n.publishDate))}</time>`:''}</div><h2>${escapeHtml(n.title||'')}</h2><div class="news-detail-content">${escapeHtml(n.content||'').replace(/\\n/g,'<br>')}</div>`;
 }
 document.addEventListener('DOMContentLoaded',()=>{$('#closeNewsCenterBtn')?.addEventListener('click',()=>{$('#newsCenter')?.classList.add('hidden');$('#homeDashboardRow')?.classList.remove('hidden');});});
 
@@ -305,7 +305,7 @@ function openNewsPopup(n){
   $('#newsPopupTitle').textContent=n.title||'ข่าวสาร';
   const cat=newsCategoryClass(n.category);
   body.innerHTML=`<div class="news-popup-meta"><span class="${cat}">${escapeHtml(n.category||'ข่าวสาร')}</span>${n.publishDate?`<time>${escapeHtml(formatShortDate(n.publishDate))}</time>`:''}</div>
-    ${n.imageUrl?`<button type="button" class="news-popup-thumb-btn" onclick="openImageLightbox('${escapeHtml(n.imageUrl)}')"><img src="${escapeHtml(n.imageUrl)}" alt="รูปข่าว"><span>คลิกเพื่อดูรูปขนาดเต็ม</span></button>`:''}
+    ${newsImages(n).length?`<div class="news-popup-gallery">${newsImages(n).map(u=>`<button type="button" onclick="openImageLightbox('${escapeHtml(u)}')"><img src="${escapeHtml(u)}" alt="รูปข่าว"></button>`).join('')}</div>`:''}
     <div class="news-popup-content">${escapeHtml(n.content||'').replace(/\n/g,'<br>')}</div>`;
   modal.classList.remove('hidden');
 }
@@ -322,3 +322,5 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(e.target.closest('[data-close-image-lightbox]'))$('#imageLightbox')?.classList.add('hidden');
   });
 });
+
+function newsImages(n){const a=Array.isArray(n?.images)?n.images.filter(Boolean):[];if(!a.length&&n?.imageUrl)a.push(n.imageUrl);return a;}
