@@ -1,9 +1,9 @@
 /*
- SK Alumni Member System V1.0.20 - Hybrid
+ SK Alumni Member System V1.0.22 - Hybrid
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
-  VERSION: '1.0.20',
+  VERSION: '1.0.21',
   API_URL: 'https://script.google.com/macros/s/AKfycbyvMLHGrhtRsrHJC_A0TRB7-GPmS9FFICHI_Soo6X0qwPYRC7ishqmdA9E9M5G30BVfXQ/exec'
 };
 
@@ -126,7 +126,7 @@ function initRegistration(){
   consent?.addEventListener('change',syncSubmitButton);photo?.addEventListener('change',async()=>{if(photo.files?.[0]?.size>8*1024*1024){photo.value='';await uiAlert('รูปมีขนาดใหญ่เกินไป','กรุณาเลือกรูปต้นฉบับไม่เกิน 8 MB ระบบจะย่อรูปให้อัตโนมัติ','warning');}syncSubmitButton();});syncSubmitButton();
   function paint(){$$('.form-step').forEach(x=>x.classList.toggle('active',Number(x.dataset.step)===step));$$('[data-step-indicator]').forEach(x=>x.classList.toggle('active',Number(x.dataset.stepIndicator)===step));prev.hidden=step===1;next.hidden=step>=3;submit.hidden=step!==3;next.classList.toggle('hidden',step>=3);submit.classList.toggle('hidden',step!==3);syncSubmitButton();}
   async function validateCurrent(){const panel=$(`.form-step[data-step="${step}"]`);if(step===3&&!photo?.files?.length){await uiAlert('ยังไม่มีรูปถ่าย','กรุณาแนบรูปถ่ายก่อนยืนยันการลงทะเบียน','warning');return false;}for(const f of $$('input,select,textarea',panel)){if(!f.checkValidity()){const label=f.closest('label'),fieldName=(label?.childNodes?.[0]?.textContent||f.name||'ข้อมูล').trim();let msg=`กรุณาตรวจสอบช่อง “${fieldName}”`;if(f.validity.valueMissing)msg=`กรุณากรอก/เลือก “${fieldName}”`;else if(f.validity.typeMismatch)msg=`รูปแบบ “${fieldName}” ไม่ถูกต้อง`;await uiAlert('ข้อมูลยังไม่ครบ',msg,'warning');f.focus();return false;}}return true;}
-  next.addEventListener('click',async()=>{if(await validateCurrent()){step=Math.min(3,step+1);paint();window.scrollTo({top:$('#register')?.offsetTop-90||0,behavior:'smooth'});}});
+  next.addEventListener('click',async()=>{if(await validateCurrent()){const keepY=window.scrollY;step=Math.min(3,step+1);paint();requestAnimationFrame(()=>window.scrollTo({top:keepY,left:0,behavior:'auto'}));}});
   prev.addEventListener('click',()=>{step=Math.max(1,step-1);paint();});
   form.addEventListener('submit',async e=>{e.preventDefault();if(!(await validateCurrent()))return;try{setLoading(true);const fd=new FormData(form),payload=Object.fromEntries(fd.entries());delete payload.photo;if(payload.prefix==='อื่นๆ')payload.prefix=String(payload.prefixOther||'').trim();delete payload.prefixOther;if(!payload.prefix)throw new Error('กรุณากรอกคำนำหน้า');const file=photo.files[0];payload.photoDataUrl=await fileToDataUrl(file);payload.photoName=file.name;const out=await api('registerMember',payload);const address=[payload.houseNo,payload.moo?`หมู่ ${payload.moo}`:'',payload.soi?`ซอย ${payload.soi}`:'',payload.road?`ถนน ${payload.road}`:'',payload.subdistrict?`ตำบล/แขวง ${payload.subdistrict}`:'',payload.district?`อำเภอ/เขต ${payload.district}`:'',payload.province?`จังหวัด ${payload.province}`:'',payload.postalCode].filter(Boolean).join(' ');const receipt={memberCode:out.member.memberCode,status:out.member.status,fullName:payload.fullName,prefix:payload.prefix,arabicName:payload.arabicName||'',email:payload.email,phone:payload.phone||'',photoDataUrl:payload.photoDataUrl,registeredAt:out.member.registeredAt,address};sessionStorage.setItem('skLastRegistration',JSON.stringify(receipt));form.reset();step=1;syncPrefixOther();paint();syncSubmitButton();await showRegistrationPaymentStep(out.member);}catch(err){toast(err.message,'error');}finally{setLoading(false);}});
 }
