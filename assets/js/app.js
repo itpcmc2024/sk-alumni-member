@@ -1,5 +1,5 @@
 /*
- SK Alumni Member System V1.0.22 - Hybrid
+ SK Alumni Member System V1.0.23 - Hybrid
  IMPORTANT: หลัง Deploy Google Apps Script ให้ใส่ Web App URL ใน API_URL ด้านล่าง
 */
 const SK_CONFIG = {
