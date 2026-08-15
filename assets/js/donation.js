@@ -1,5 +1,5 @@
 /*
- SK Alumni Member System V1.0.22
+ SK Alumni Member System V1.0.23
  Smart donation/payment form
 */
 document.addEventListener('DOMContentLoaded',()=>initDonationForm());
