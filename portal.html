@@ -1,4 +1,4 @@
-<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="assets/css/style.css"><title>ข้อมูลสมาชิก | V1.0.22</title></head><body class="v105-page inner-page"><header class="v105-header">
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="assets/css/style.css"><title>ข้อมูลสมาชิก | V1.0.23</title></head><body class="v105-page inner-page"><header class="v105-header">
       <a class="v105-brand" href="index.html">
         <img src="assets/img/association-logo.jpg" alt="โลโก้สมาคม">
         <b>สมาคมศิษย์เก่า<br>นูรุ้ลอิสลามสัมพันธ์<br><span>(สุเหร่าเขียว)</span></b>
@@ -17,7 +17,20 @@
   <button id="portalCertificateBtn" class="btn btn-soft" type="button">📄 หลักฐานการเป็นสมาชิก / PDF</button>
   <label class="btn btn-soft portal-photo-upload">📷 เปลี่ยนรูปสมาชิก<input id="portalPhotoInput" type="file" accept="image/*" hidden></label>
 </div>
-<div class="portal-tabs"><button class="active" data-portal-tab="profile">ข้อมูลส่วนตัว</button><button data-portal-tab="payments">ประวัติชำระสมาชิก</button><button data-portal-tab="donations">ประวัติบริจาค</button><button data-portal-tab="benefits">ประวัติสิทธิประโยชน์</button></div><div data-portal-panel="profile" class="portal-panel"><form id="portalProfileForm" class="portal-profile-form"><label>ชื่อ-สกุล<input id="portalFullName" readonly></label><label>ชื่ออาหรับ<input id="portalArabicName" readonly></label><label>เบอร์โทรศัพท์<input id="portalPhone" name="phone"></label><label>อีเมล<input id="portalEditEmail" name="email" type="email"></label><label class="wide">ที่อยู่<input id="portalAddress" readonly></label><button class="btn btn-primary" type="submit">บันทึกข้อมูลติดต่อ</button></form></div><div data-portal-panel="payments" class="portal-panel hidden"><div id="portalPayments"></div></div><div data-portal-panel="donations" class="portal-panel hidden"><div id="portalDonations"></div></div><div data-portal-panel="benefits" class="portal-panel hidden"><div id="portalBenefits"></div></div></section>
+<div class="portal-tabs"><button class="active" data-portal-tab="profile">ข้อมูลส่วนตัว</button><button data-portal-tab="payments">ประวัติชำระสมาชิก</button><button data-portal-tab="donations">ประวัติบริจาค</button><button data-portal-tab="benefits">ประวัติสิทธิประโยชน์</button></div><div data-portal-panel="profile" class="portal-panel"><form id="portalProfileForm" class="portal-profile-form"><label>ชื่อ-สกุล<input id="portalFullName" readonly></label><label>ชื่ออาหรับ<input id="portalArabicName" readonly></label><label>เบอร์โทรศัพท์<input id="portalPhone" name="phone"></label><label>อีเมล<input id="portalEditEmail" name="email" type="email"></label><fieldset class="portal-address-fieldset wide">
+  <legend>ที่อยู่</legend>
+  <div class="portal-address-grid">
+    <label>บ้านเลขที่<input id="portalHouseNo" name="houseNo"></label>
+    <label>หมู่<input id="portalMoo" name="moo"></label>
+    <label>ซอย<input id="portalSoi" name="soi"></label>
+    <label>ถนน<input id="portalRoad" name="road"></label>
+    <label>ตำบล / แขวง<input id="portalSubdistrict" name="subdistrict" required></label>
+    <label>อำเภอ / เขต<input id="portalDistrict" name="district" required></label>
+    <label>จังหวัด<input id="portalProvince" name="province" required></label>
+    <label>รหัสไปรษณีย์<input id="portalPostalCode" name="postalCode" inputmode="numeric" maxlength="5" required></label>
+  </div>
+</fieldset>
+<button class="btn btn-primary" type="submit">บันทึกข้อมูลติดต่อและที่อยู่</button></form></div><div data-portal-panel="payments" class="portal-panel hidden"><div id="portalPayments"></div></div><div data-portal-panel="donations" class="portal-panel hidden"><div id="portalDonations"></div></div><div data-portal-panel="benefits" class="portal-panel hidden"><div id="portalBenefits"></div></div></section>
 <div id="portalCardModal" class="member-detail-modal hidden"><div class="member-detail-backdrop" data-close-portal-card></div><div class="member-detail-card portal-card-modal"><div class="member-detail-head"><div><span class="eyebrow">DIGITAL MEMBER CARD</span><h2>บัตรสมาชิกดิจิทัล</h2></div><button class="detail-close" data-close-portal-card>×</button></div><div id="portalDigitalCard"></div><div class="member-detail-actions"><button class="btn btn-ghost" data-close-portal-card>ปิด</button><button id="portalCardPrintBtn" class="btn btn-primary">🖨️ พิมพ์ / PDF</button></div></div></div>
 </section></main><footer class="v105-footer">
       <div class="footer-logo-wrap"><img src="assets/img/association-logo.jpg" alt="โลโก้สมาคม"></div>
@@ -26,5 +39,5 @@
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.22</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.23</div>
     </footer><div id="toast" class="toast"></div><div id="loading" class="loading hidden"><div class="spinner"></div></div><script src="assets/js/app.js"></script><script src="assets/js/portal.js"></script></body></html>
