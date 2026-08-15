@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Admin | SK Alumni Member System V1.0.22</title>
+  <title>Admin | SK Alumni Member System V1.0.23</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body class="admin-page">
 <header class="topbar compact">
-  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.22</span></p></div></div>
+  <div class="brand"><div class="brand-mark">SK</div><div><h1>Admin Dashboard</h1><p>ระบบสมาชิกสมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ <span class="version">V1.0.23</span></p></div></div>
   <nav class="nav-actions"><a href="index.html" class="btn btn-ghost">หน้าเว็บหลัก</a><button id="logoutBtn" class="btn btn-soft hidden">ออกจากระบบ</button></nav>
 </header>
 
@@ -32,6 +32,7 @@
     <button class="admin-tab" data-admin-tab="webmanage">🌐 จัดการหน้าเว็บ</button>
     <button class="admin-tab" data-admin-tab="accounting">💰 บัญชีรายรับ-รายจ่าย</button>
     <button class="admin-tab" data-admin-tab="benefits">🎁 สิทธิประโยชน์</button><button class="admin-tab" data-admin-tab="reports">📊 รายงานสรุป</button>
+    <button class="admin-tab" data-admin-tab="receipts">🧾 ใบเสร็จ</button>
     <button class="admin-tab" data-admin-tab="settings">⚙️ ตั้งค่าระบบ</button>
   </div>
   <div data-admin-panel="members">
@@ -209,6 +210,16 @@
     <div id="reportBreakdown" class="report-breakdown"></div>
   </div>
 </div>
+
+<div data-admin-panel="receipts" class="hidden">
+  <div class="panel admin-module">
+    <div class="panel-head"><div><h3>🧾 ระบบใบเสร็จรับเงิน — Phase 1</h3><p>ออกใบเสร็จอัตโนมัติเมื่อ Admin อนุมัติการชำระเงิน ค้นหา ดู พิมพ์ซ้ำ และยกเลิกโดยเก็บประวัติ</p></div><button class="btn btn-white" type="button" onclick="loadReceipts()">รีเฟรช</button></div>
+    <div class="member-table-toolbar"><input id="receiptSearch" placeholder="ค้นหาเลขที่ใบเสร็จ / รหัสสมาชิก / ชื่อผู้ชำระ"><select id="receiptStatusFilter"><option value="">ทุกสถานะ</option><option>ออกแล้ว</option><option>ยกเลิก</option></select><select id="receiptPageSize"><option>10</option><option>20</option><option>50</option><option value="all">All</option></select></div>
+    <div id="receiptPagerTop" class="table-pager"></div>
+    <div class="table-wrap"><table><thead><tr><th>เลขที่ใบเสร็จ</th><th>วันที่</th><th>สมาชิก</th><th>ผู้ชำระ</th><th>จำนวนเงิน</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody id="receiptList"></tbody></table></div>
+  </div>
+</div>
+
 <div data-admin-panel="settings" class="hidden">
   <div class="panel admin-module">
     <div class="panel-head"><div><h3>⚙️ ตั้งค่าระบบ</h3><p>ค่าพื้นฐานที่ใช้กับระบบสมาชิก</p></div></div>
@@ -218,6 +229,11 @@
       <label>ค่าสมาชิกรายปี<input name="MEMBERSHIP_FEE_YEARLY" inputmode="decimal"></label>
       <label>ค่าสมาชิกรายเดือน<input name="MEMBERSHIP_FEE_MONTHLY" inputmode="decimal"></label>
       <label>PromptPay<input name="PROMPTPAY"></label>
+      <label>ชื่อหน่วยงานบนใบเสร็จ<input name="RECEIPT_ORG_NAME"></label>
+      <label class="wide">ที่อยู่หน่วยงานบนใบเสร็จ<input name="RECEIPT_ORG_ADDRESS"></label>
+      <label>เลขประจำตัวผู้เสียภาษี (ถ้ามี)<input name="RECEIPT_TAX_ID"></label>
+      <label>ผู้รับเงิน / ผู้ลงนาม<input name="RECEIPT_SIGNER"></label>
+      <label>Prefix เลขที่ใบเสร็จ<input name="RECEIPT_PREFIX" placeholder="RC"></label>
       <div class="settings-actions"><button class="btn btn-primary">💾 บันทึกการตั้งค่า</button></div>
     </form>
   </div>
@@ -272,7 +288,7 @@
         <span>نور الإسلام · Nurul Islam</span>
         <small>🌙 ศรัทธา　🤝 ความรู้　💚 สายสัมพันธ์</small>
       </div>
-      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.22</div>
+      <div class="footer-copyright">© 2026 SK Alumni Member System by KimhanIkals | V1.0.23</div>
     </footer><div id="toast" class="toast"></div>
 <div id="loading" class="loading hidden"><div class="spinner"></div><span>กำลังดำเนินการ...</span></div>
 <script src="assets/js/app.js"></script>
