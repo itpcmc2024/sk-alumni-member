@@ -128,7 +128,7 @@ function renderPrintApplicationWindow(w,m){
   w.document.open();
   w.document.write(`<!doctype html><html lang="th"><head><meta charset="utf-8"><title>ใบสมัคร ${escapeHtml(m.memberCode)}</title><style>
   @page{size:A4;margin:10mm 11mm 10mm}*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff}body{font-family:"Noto Sans Thai",Tahoma,Arial,sans-serif;color:#173d31}.page{width:188mm;min-height:277mm;margin:auto;position:relative;padding:12mm 0 16mm}.print-meta{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;font-size:9px;color:#333}.head{text-align:center}.head img{width:75px;height:75px;object-fit:contain}.head h1{font-size:24px;margin:8px 0 4px}.head h2{font-size:17px;margin:0 0 12px}.greenline{height:2px;background:#16805a;margin:13px 0 14px}.topgrid{display:grid;grid-template-columns:118px 1fr;gap:18px}.photo{width:118px;height:145px;object-fit:cover;border:1px solid #cad8d1}.photo-ph{width:118px;height:145px;border:1px solid #cad8d1;display:grid;place-items:center;color:#82928a}table{width:100%;border-collapse:collapse;font-size:14px}td{border:1px solid #c7d6cf;padding:8px 10px;vertical-align:top}td.label{width:28%;font-weight:700;background:#f8faf9}.section{color:#08794f;font-size:16px;font-weight:800;margin:15px 0 7px}.address-cell{line-height:1.5}.sign-row{display:grid;grid-template-columns:1fr 1fr;gap:90px;margin-top:58px;text-align:center}.sign-president{width:31%;margin:54px auto 0;text-align:center}.signline{border-top:1px solid #333;padding-top:4px}.foot{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:end;font-size:8.5px;color:#4f6259}.actions{position:fixed;right:15px;top:15px;z-index:10;padding:9px 12px;border:1px solid #bac9c2;border-radius:8px;background:#fff;cursor:pointer}@media print{.actions{display:none}.page{margin:0}}
-  </style></head><body><button id="printNowBtn" class="actions" type="button">🖨 พิมพ์ / Save as PDF</button><div class="page"><div class="print-meta"><span>วันที่พิมพ์ ${escapeHtml(printedAt)}</span><span>ใบสมัคร ${escapeHtml(m.memberCode)}</span></div><div class="head"><img src="${logo}"><h1>ใบสมัครสมาชิก</h1><h2>สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ (สุเหร่าเขียว)</h2></div><div class="greenline"></div><div class="topgrid">${m.photoUrl?`<img class="photo" src="${escapeHtml(m.photoUrl)}">`:'<div class="photo-ph">รูปถ่าย</div>'}<table><tr><td class="label">รหัสสมาชิก</td><td><b>${escapeHtml(m.memberCode)}</b></td></tr><tr><td class="label">สถานะ</td><td>${escapeHtml(m.status)}</td></tr><tr><td class="label">วันที่สมัคร</td><td>${escapeHtml(formatDate(m.registeredAt))}</td></tr></table></div><div class="section">ข้อมูลส่วนตัว</div><table><tr><td class="label">ชื่อ-สกุล</td><td>${escapeHtml((m.prefix||'')+' '+(m.fullName||''))}</td></tr><tr><td class="label">ชื่ออาหรับ</td><td>${escapeHtml(m.arabicName||'-')}</td></tr><tr><td class="label">เบอร์โทรศัพท์</td><td>${escapeHtml(formatThaiPhone(m.phone||'-'))}</td></tr><tr><td class="label">อีเมล</td><td>${escapeHtml(m.email||'-')}</td></tr></table><div class="section">ที่อยู่</div><table><tr><td class="label">ที่อยู่</td><td class="address-cell">${addrHtml}</td></tr></table><div class="sign-row"><div class="signline">ลายมือชื่อผู้สมัคร</div><div class="signline">เจ้าหน้าที่ผู้ตรวจสอบ</div></div><div class="sign-president"><div class="signline">ประธานสมาคมฯ</div></div><div class="foot"><span></span><span>© 2026 SK Alumni Member System by KimhanIkals | V1.0.22　1/1</span></div></div><script>document.getElementById('printNowBtn').addEventListener('click',function(){window.focus();window.print();});<\/script></body></html>`);
+  </style></head><body><button id="printNowBtn" class="actions" type="button">🖨 พิมพ์ / Save as PDF</button><div class="page"><div class="print-meta"><span>วันที่พิมพ์ ${escapeHtml(printedAt)}</span><span>ใบสมัคร ${escapeHtml(m.memberCode)}</span></div><div class="head"><img src="${logo}"><h1>ใบสมัครสมาชิก</h1><h2>สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ (สุเหร่าเขียว)</h2></div><div class="greenline"></div><div class="topgrid">${m.photoUrl?`<img class="photo" src="${escapeHtml(m.photoUrl)}">`:'<div class="photo-ph">รูปถ่าย</div>'}<table><tr><td class="label">รหัสสมาชิก</td><td><b>${escapeHtml(m.memberCode)}</b></td></tr><tr><td class="label">สถานะ</td><td>${escapeHtml(m.status)}</td></tr><tr><td class="label">วันที่สมัคร</td><td>${escapeHtml(formatDate(m.registeredAt))}</td></tr></table></div><div class="section">ข้อมูลส่วนตัว</div><table><tr><td class="label">ชื่อ-สกุล</td><td>${escapeHtml((m.prefix||'')+' '+(m.fullName||''))}</td></tr><tr><td class="label">ชื่ออาหรับ</td><td>${escapeHtml(m.arabicName||'-')}</td></tr><tr><td class="label">เบอร์โทรศัพท์</td><td>${escapeHtml(formatThaiPhone(m.phone||'-'))}</td></tr><tr><td class="label">อีเมล</td><td>${escapeHtml(m.email||'-')}</td></tr></table><div class="section">ที่อยู่</div><table><tr><td class="label">ที่อยู่</td><td class="address-cell">${addrHtml}</td></tr></table><div class="sign-row"><div class="signline">ลายมือชื่อผู้สมัคร</div><div class="signline">เจ้าหน้าที่ผู้ตรวจสอบ</div></div><div class="sign-president"><div class="signline">ประธานสมาคมฯ</div></div><div class="foot"><span></span><span>© 2026 SK Alumni Member System by KimhanIkals | V1.0.23　1/1</span></div></div><script>document.getElementById('printNowBtn').addEventListener('click',function(){window.focus();window.print();});<\/script></body></html>`);
   w.document.close();w.focus();
 }
 async function editMember(code){
@@ -139,7 +139,7 @@ async function editMember(code){
 }
 async function saveMemberEdit(e){e.preventDefault();const f=e.currentTarget,btn=f.querySelector('button[type="submit"]');if(btn.disabled)return;btn.disabled=true;btn.textContent='กำลังบันทึก...';try{const data=Object.fromEntries(new FormData(f).entries());await api('adminUpdateMember',{token:adminToken,...data});$('#memberEditModal').classList.add('hidden');await uiAlert('บันทึกแล้ว','แก้ไขข้อมูลสมาชิกเรียบร้อย');await refreshDashboard()}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error')}finally{btn.disabled=false;btn.textContent='บันทึกข้อมูล'}}
 
-// Admin modules V1.0.22
+// Admin modules V1.0.23
 document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('[data-admin-tab]').forEach(btn=>btn.addEventListener('click',()=>switchAdminTab(btn.dataset.adminTab)));
   $('#newNewsBtn')?.addEventListener('click',()=>openNewsEditor());
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('#refreshMediaBtn')?.addEventListener('click',loadMedia);
   $('#settingsForm')?.addEventListener('submit',saveSettings);
   $('#memberEditForm')?.addEventListener('submit',saveMemberEdit);
-  document.addEventListener('click',e=>{if(e.target.closest('[data-close-news]')) $('#newsEditModal')?.classList.add('hidden'); if(e.target.closest('[data-close-member-edit]')) $('#memberEditModal')?.classList.add('hidden');});
+  document.addEventListener('click',e=>{if(e.target.closest('[data-close-news]')) $('#newsEditModal')?.classList.add('hidden'); if(e.target.closest('[data-close-member-edit]')) $('#memberEditModal')?.classList.add('hidden'); if(e.target.closest('[data-close-receipt]')) $('#receiptDetailModal')?.classList.add('hidden');});
 });
 function switchAdminTab(name){
   document.querySelectorAll('[data-admin-tab]').forEach(x=>x.classList.toggle('active',x.dataset.adminTab===name));
@@ -160,6 +160,7 @@ function switchAdminTab(name){
   if(name==='accounting') loadAccounting();
   if(name==='benefits') loadBenefitsAdmin();
   if(name==='reports') loadAccountingReport();
+  if(name==='receipts') loadReceipts();
   if(name==='settings') loadSettings();if(name==='topics') loadAdminTopics();
 }
 let adminNewsCache=[];
@@ -249,7 +250,7 @@ async function loadSettings(){
 }
 async function saveSettings(e){
   e.preventDefault(); const f=e.currentTarget, settings={};
-  ['APP_NAME','CONTACT_EMAIL','MEMBERSHIP_FEE_YEARLY','MEMBERSHIP_FEE_MONTHLY','PROMPTPAY'].forEach(k=>settings[k]=f.elements[k]?.value||'');
+  ['APP_NAME','CONTACT_EMAIL','MEMBERSHIP_FEE_YEARLY','MEMBERSHIP_FEE_MONTHLY','PROMPTPAY','RECEIPT_ORG_NAME','RECEIPT_ORG_ADDRESS','RECEIPT_TAX_ID','RECEIPT_SIGNER','RECEIPT_PREFIX'].forEach(k=>settings[k]=f.elements[k]?.value||'');
   try{setLoading(true);await api('adminSettingsSave',{token:adminToken,settings});await uiAlert('บันทึกแล้ว','อัปเดตการตั้งค่าระบบเรียบร้อย');}catch(err){uiAlert('บันทึกไม่สำเร็จ',err.message,'error');}finally{setLoading(false);}
 }
 
@@ -433,3 +434,43 @@ async function compressImageForUpload(file){
   const max=1400,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);
   c.getContext('2d').drawImage(img,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.82);
 }
+
+
+let receiptRows=[],receiptPage=1,currentReceiptDetail=null;
+async function loadReceipts(){
+  const host=$('#receiptList');if(!host)return;host.innerHTML='<tr><td colspan="7" class="empty">กำลังโหลด...</td></tr>';
+  try{const o=await api('adminReceiptsList',{token:adminToken});receiptRows=o.rows||[];receiptPage=1;renderReceipts();}
+  catch(e){host.innerHTML='<tr><td colspan="7" class="empty">โหลดไม่สำเร็จ</td></tr>';uiAlert('โหลดใบเสร็จไม่สำเร็จ',e.message,'error');}
+}
+function renderReceipts(){
+  const host=$('#receiptList');if(!host)return;const q=String($('#receiptSearch')?.value||'').toLowerCase(),st=$('#receiptStatusFilter')?.value||'',sv=$('#receiptPageSize')?.value||'10';
+  let rows=receiptRows.filter(x=>(!st||x.status===st)&&(!q||[x.receiptNo,x.memberCode,x.payer,x.paymentId].join(' ').toLowerCase().includes(q)));
+  const ps=sv==='all'?(rows.length||1):Number(sv),pages=Math.max(1,Math.ceil(rows.length/ps));receiptPage=Math.min(receiptPage,pages);
+  const shown=sv==='all'?rows:rows.slice((receiptPage-1)*ps,receiptPage*ps);
+  host.innerHTML=shown.length?shown.map(x=>`<tr><td><b>${escapeHtml(x.receiptNo)}</b><small>${escapeHtml(x.paymentId||'')}</small></td><td>${escapeHtml(formatDate(x.date))}</td><td>${escapeHtml(x.memberCode||'-')}</td><td>${escapeHtml(x.payer||'-')}</td><td>${Number(x.amount||0).toLocaleString('th-TH')} บาท</td><td><span class="status-badge ${x.status==='ยกเลิก'?'rejected':'active'}">${escapeHtml(x.status||'-')}</span></td><td><button class="btn btn-view" onclick="openReceiptDetail('${escapeHtml(x.receiptNo)}')">ดู</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">ยังไม่มีใบเสร็จ</td></tr>';
+  const pg=$('#receiptPagerTop');if(pg)pg.innerHTML=`<span>ทั้งหมด ${rows.length} ใบ</span><div><button ${receiptPage<=1?'disabled':''} onclick="changeReceiptPage(-1)">‹</button> หน้า ${receiptPage} / ${pages} <button ${receiptPage>=pages?'disabled':''} onclick="changeReceiptPage(1)">›</button></div>`;
+}
+function changeReceiptPage(step){receiptPage=Math.max(1,receiptPage+step);renderReceipts();}
+async function openReceiptDetail(no){
+  try{setLoading(true);const o=await api('adminReceiptDetail',{token:adminToken,receiptNo:no});currentReceiptDetail=o;const r=o.receipt;
+    $('#receiptDetailBody').innerHTML=`<div class="transaction-detail-grid"><div><small>เลขที่ใบเสร็จ</small><b>${escapeHtml(r.receiptNo)}</b></div><div><small>สถานะ</small><b>${escapeHtml(r.status)}</b></div><div><small>Payment ID</small><b>${escapeHtml(r.paymentId)}</b></div><div><small>รหัสสมาชิก</small><b>${escapeHtml(r.memberCode)}</b></div><div><small>ผู้ชำระ</small><b>${escapeHtml(r.payer)}</b></div><div><small>จำนวนเงิน</small><b>${Number(r.amount||0).toLocaleString('th-TH')} บาท</b></div><div><small>จำนวนเงินตัวอักษร</small><b>${escapeHtml(r.amountText)}</b></div><div><small>วันที่ออก</small><b>${escapeHtml(formatDate(r.date))}</b></div></div>${r.voidReason?`<div class="transaction-note"><small>เหตุผลยกเลิก</small><p>${escapeHtml(r.voidReason)}</p></div>`:''}`;
+    $('#receiptVoidBtn').disabled=r.status==='ยกเลิก';$('#receiptDetailModal').classList.remove('hidden');
+  }catch(e){uiAlert('เปิดใบเสร็จไม่สำเร็จ',e.message,'error');}finally{setLoading(false);}
+}
+async function voidCurrentReceipt(){
+  const r=currentReceiptDetail?.receipt;if(!r||r.status==='ยกเลิก')return;
+  const reason=prompt('กรุณาระบุเหตุผลการยกเลิกใบเสร็จ');if(!reason?.trim())return;
+  if(!(await uiConfirm('ยกเลิกใบเสร็จ',`ยืนยันยกเลิก ${r.receiptNo} ?\nระบบจะเก็บเลขที่และประวัติไว้ ไม่ลบออกจากระบบ`)))return;
+  try{await api('adminVoidReceipt',{token:adminToken,receiptNo:r.receiptNo,reason:reason.trim()});await uiAlert('ยกเลิกแล้ว','เก็บเลขที่และประวัติการยกเลิกไว้เรียบร้อย','success');$('#receiptDetailModal').classList.add('hidden');loadReceipts();}
+  catch(e){uiAlert('ยกเลิกไม่สำเร็จ',e.message,'error');}
+}
+function printCurrentReceipt(){if(!currentReceiptDetail)return;const r=currentReceiptDetail.receipt,s=currentReceiptDetail.settings||{},w=window.open('','_blank','width=850,height=1000');if(!w)return uiAlert('เปิดหน้าพิมพ์ไม่ได้','กรุณาอนุญาต Pop-up','warning');const logo=new URL('assets/img/association-logo.jpg',location.href).href;
+  w.document.write(`<html lang="th"><head><meta charset="utf-8"><title>ใบเสร็จ ${escapeHtml(r.receiptNo)}</title><style>@page{size:A4;margin:16mm}body{font-family:Tahoma,Arial;color:#163d32}.head{text-align:center}.logo{width:82px}.title{font-size:26px;font-weight:800;margin:8px}.sub{font-size:14px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0}.box{border:1px solid #c9d9d1;padding:10px}.line{display:grid;grid-template-columns:180px 1fr;border-bottom:1px solid #dbe5e0;padding:10px 0}.label{font-weight:700}.amount{font-size:22px;color:#087853}.void{border:3px solid #c64554;color:#c64554;font-size:34px;font-weight:900;text-align:center;padding:10px;transform:rotate(-8deg);margin:18px auto;width:240px}.sign{margin-top:65px;text-align:right;padding-right:60px}.actions{position:fixed;right:18px;top:18px}@media print{.actions{display:none}}</style></head><body><button class="actions" onclick="print()">พิมพ์ / Save as PDF</button><div class="head"><img class="logo" src="${logo}"><div class="title">ใบเสร็จรับเงิน</div><div class="sub">${escapeHtml(s.orgName||'สมาคมศิษย์เก่านูรุ้ลอิสลามสัมพันธ์ (สุเหร่าเขียว)')}</div><div class="sub">${escapeHtml(s.orgAddress||'')}</div>${s.taxId?`<div class="sub">เลขประจำตัวผู้เสียภาษี ${escapeHtml(s.taxId)}</div>`:''}</div><div class="meta"><div class="box"><b>เลขที่</b> ${escapeHtml(r.receiptNo)}</div><div class="box"><b>วันที่</b> ${escapeHtml(formatDate(r.date))}</div></div><div class="line"><span class="label">ได้รับเงินจาก</span><span>${escapeHtml(r.payer)}</span></div><div class="line"><span class="label">รหัสสมาชิก</span><span>${escapeHtml(r.memberCode||'-')}</span></div><div class="line"><span class="label">รายการ</span><span>ชำระค่าสมาชิก</span></div><div class="line"><span class="label">จำนวนเงิน</span><span class="amount">${Number(r.amount||0).toLocaleString('th-TH')} บาท</span></div><div class="line"><span class="label">จำนวนเงินตัวอักษร</span><span>${escapeHtml(r.amountText||'')}</span></div><div class="line"><span class="label">วิธีชำระ</span><span>${escapeHtml(r.paymentMethod||'')}</span></div>${r.status==='ยกเลิก'?'<div class="void">ยกเลิก</div>':''}<div class="sign">........................................<br>${escapeHtml(s.signer||'ผู้รับเงิน')}<br>ผู้รับเงิน</div><p style="margin-top:70px;font-size:10px;color:#788">เอกสาร Phase 1 สำหรับระบบรับเงินของสมาคม — โปรดตรวจข้อมูลทางบัญชี/ภาษีก่อนใช้เป็นเอกสารทางภาษีอย่างเป็นทางการ</p><p style="text-align:right;font-size:10px">© 2026 SK Alumni Member System by KimhanIkals | V1.0.23</p></body></html>`);w.document.close();w.focus();
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  $('#receiptSearch')?.addEventListener('input',()=>{receiptPage=1;renderReceipts();});
+  $('#receiptStatusFilter')?.addEventListener('change',()=>{receiptPage=1;renderReceipts();});
+  $('#receiptPageSize')?.addEventListener('change',()=>{receiptPage=1;renderReceipts();});
+  $('#receiptPrintBtn')?.addEventListener('click',printCurrentReceipt);
+  $('#receiptVoidBtn')?.addEventListener('click',voidCurrentReceipt);
+});
